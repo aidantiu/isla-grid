@@ -9,11 +9,15 @@ import { useAuth } from "@/providers/authentication";
 
 const DashboardNavbar = () => {
   const links = [
-    { href: "/dashboard/ai", location: "AI" },
+    { href: "/dashboard/ai", location: "IslaBot" },
     { href: "/dashboard/nfc", location: "NFC Card" },
   ];
   const [isOpen, setIsOpen] = useState(false);
-  const { state, logout } = useAuth();
+  const { user, state, logout } = useAuth();
+
+  const displayName =
+    user?.displayName || user?.email?.split("@")[0] || "Your Account";
+  const email = user?.email;
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -52,9 +56,21 @@ const DashboardNavbar = () => {
               <Link
                 href="/dashboard/profile"
                 aria-label="Profile"
-                className="inline-flex items-center justify-center rounded-full p-2 text-[#FC7019] transition-colors hover:bg-[#FC7019]/10 hover:text-[#E25F17]"
+                className="group relative inline-flex items-center justify-center rounded-full p-2 text-[#FC7019] transition-colors hover:bg-[#FC7019]/10 hover:text-[#E25F17] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FC7019]/40"
               >
                 <FaRegUserCircle className="h-5 w-5" />
+                {(displayName || email) && (
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-3 w-56 -translate-x-1/2 rounded-2xl border border-white/60 bg-white/95 p-3 text-left opacity-0 shadow-xl ring-1 ring-black/5 transition-all duration-150 ease-out group-hover:translate-y-1 group-hover:opacity-100 group-focus-visible:translate-y-1 group-focus-visible:opacity-100">
+                    {displayName && (
+                      <p className="text-sm font-semibold text-[#131B28]">
+                        {displayName}
+                      </p>
+                    )}
+                    {email && (
+                      <p className="mt-1 text-xs text-gray-500">{email}</p>
+                    )}
+                  </div>
+                )}
               </Link>
               {state === "authenticated" && (
                 <button
