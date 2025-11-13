@@ -152,9 +152,12 @@ const AiPage = () => {
       // If the deleted conversation was the current one, set a valid fallback ID
       if (conversationId === currentConversationId) {
         // Find the first fallbackConversations ID that exists in newMessagesByConversation
-        const fallbackId = fallbackConversations.find(conv => newMessagesByConversation.hasOwnProperty(conv.id))?.id
-          ?? Object.keys(newMessagesByConversation)[0]
-          ?? "welcome";
+        const fallbackId =
+          fallbackConversations.find((conv) =>
+            newMessagesByConversation.hasOwnProperty(conv.id)
+          )?.id ??
+          Object.keys(newMessagesByConversation)[0] ??
+          "welcome";
         setCurrentConversationId(fallbackId);
         setIsLoading(false);
       }
@@ -163,67 +166,108 @@ const AiPage = () => {
     });
   };
 
-  const simulateAssistantReply = (
-    prompt: string,
-    useSearch: boolean
-  ): ChatMessage => {
-    const trimmed = prompt.trim();
-    const topic = trimmed.length > 0 ? trimmed : "your request";
-    const snippet = topic.length > 80 ? `${topic.slice(0, 77)}...` : topic;
+  // const simulateAssistantReply = (
+  //   prompt: string,
+  //   useSearch: boolean
+  // ): ChatMessage => {
+  //   const trimmed = prompt.trim();
+  //   const topic = trimmed.length > 0 ? trimmed : "your request";
+  //   const snippet = topic.length > 80 ? `${topic.slice(0, 77)}...` : topic;
 
-    return {
-      id: `assistant-${Date.now()}`,
-      role: "assistant",
-      usedSearch: useSearch,
-      content: `Here is what I can share about "${snippet}":\n\n1. Generation — assess solar, hydro, wind, or hybrid potential using the AI-Driven Energy Design Studio.\n2. Distribution — connect community-owned assets to Meralco's grid with smart metering for transparent exports.\n3. Benefit Sharing — route revenues into NFC profit cards so residents experience direct economic uplift.\n\nProvide location, resource data, demand profile, and community stakeholders if you want me to draft a tailored IslaGrid rollout.`,
-    };
+  //   return {
+  //     id: `assistant-${Date.now()}`,
+  //     role: "assistant",
+  //     usedSearch: useSearch,
+  //     content: `Here is what I can share about "${snippet}":\n\n1. Generation — assess solar, hydro, wind, or hybrid potential using the AI-Driven Energy Design Studio.\n2. Distribution — connect community-owned assets to Meralco's grid with smart metering for transparent exports.\n3. Benefit Sharing — route revenues into NFC profit cards so residents experience direct economic uplift.\n\nProvide location, resource data, demand profile, and community stakeholders if you want me to draft a tailored IslaGrid rollout.`,
+  //   };
+  // };
+
+  const sendPromptToBackend = async (prompt: string): Promise<ChatMessage> => {
+    try {
+      const userId = "test_user_1";
+      const response = await fetch(`/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, prompt }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Chat request failed");
+      }
+
+      const data = await response.json();
+      const output = data.output;
+
+      // Try to format nicely
+      const formattedContent = output.recommendations
+        ? `
+Here’s your personalized analysis:
+      
+**Recommendations**
+${output.recommendations.map((r: string) => `• ${r}`).join("\n")}
+
+**Best Fit Energy Type:** ${output.bestFitEnergyType}
+**Estimated Savings:** ${output.estimatedSavings}
+`
+        : output.rawText || "No structured response received.";
+
+      return {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: formattedContent,
+      };
+    } catch (error: any) {
+      console.error("Chat request error:", error);
+      return {
+        id: `assistant-error-${Date.now()}`,
+        role: "assistant",
+        content:
+          " Sorry! Something went wrong while fetching data from the energy consultant service.",
+      };
+    }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (messageInput.trim().length === 0 || isLoading) {
       return;
     }
 
     const conversationId = currentConversationId;
-
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      // REAL ID PLACEHOLDER
+      id: "test_user_1",
       role: "user",
       content: messageInput.trim(),
     };
 
-    setMessagesByConversation((previous) => {
-      const current = previous[conversationId] ?? [];
-      return {
-        ...previous,
-        [conversationId]: [...current, userMessage],
-      };
-    });
+    setMessagesByConversation((previous) => ({
+      ...previous,
+      [conversationId]: [...(previous[conversationId] ?? []), userMessage],
+    }));
 
     updateConversationPreview(conversationId, messageInput.trim());
     setMessageInput("");
     setIsLoading(true);
 
-    const shouldUseSearch = webSearchEnabled;
+    try {
+      // 👇 Call your real backend (Gemini-powered)
+      const assistantMessage = await sendPromptToBackend(userMessage.content);
 
-    window.setTimeout(
-      () => {
-        const assistantMessage = simulateAssistantReply(
-          userMessage.content,
-          shouldUseSearch
-        );
-        setMessagesByConversation((previous) => {
-          const current = previous[conversationId] ?? [];
-          return {
-            ...previous,
-            [conversationId]: [...current, assistantMessage],
-          };
-        });
-        updateConversationPreview(conversationId, assistantMessage.content);
-        setIsLoading(false);
-      },
-      shouldUseSearch ? 1200 : 800
-    );
+      setMessagesByConversation((previous) => ({
+        ...previous,
+        [conversationId]: [
+          ...(previous[conversationId] ?? []),
+          assistantMessage,
+        ],
+      }));
+
+      updateConversationPreview(conversationId, assistantMessage.content);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSuggestionPick = (suggestion: string) => {
