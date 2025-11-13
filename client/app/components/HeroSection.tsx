@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const carouselImages = [
@@ -58,12 +59,28 @@ const HeroSection = () => {
           A community-driven approach to harness the Philippines renewable
           energy, built by SparkPlug.
         </p>
-        <a
-          href="/ai"
-          className="mt-10 inline-block bg-[#FC7019] text-white px-10 py-4 rounded-lg text-lg font-semibold shadow-xl hover:brightness-95 transition-all transform hover:-translate-y-1"
-        >
-          Discover The Future of Energy
-        </a>
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="#solution"
+            className="inline-block bg-[#FC7019] text-white px-10 py-4 rounded-lg text-lg font-semibold shadow-xl hover:brightness-95 transition-all transform hover:-translate-y-1"
+          >
+            Start your Clean Energy Journey
+          </a>
+          <a
+            href="/ai"
+            className="group inline-block border border-white/60 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition-all"
+          >
+            <span className="flex items-center">
+              <span>Meet the AI Consultant</span>
+              <span className="ml-0 overflow-hidden flex items-center transition-all duration-300 w-0 group-hover:w-6 group-hover:ml-2">
+                <ArrowRight
+                  className="h-5 w-5 translate-x-2 group-hover:translate-x-0 transition-transform duration-300"
+                  aria-hidden="true"
+                />
+              </span>
+            </span>
+          </a>
+        </div>
       </div>
     </header>
   );

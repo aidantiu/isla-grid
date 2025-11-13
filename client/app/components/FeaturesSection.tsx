@@ -1,3 +1,19 @@
+import {
+  ArrowRight,
+  BarChart3,
+  Building2,
+  Coffee,
+  Globe2,
+  MapPin,
+  Sparkles,
+  Stethoscope,
+  Store,
+  Sun,
+  Users,
+  Wallet,
+  Zap,
+  Wind,
+} from "lucide-react";
 import ProposalForm from "./ProposalForm";
 
 const FeaturesSection = () => (
@@ -8,7 +24,7 @@ const FeaturesSection = () => (
           How It Works
         </h2>
         <p className="mt-3 text-4xl md:text-5xl font-extrabold text-[#131B28]">
-          A 3-Step Journey to Renewable Energy
+          A 5-Step Journey to Renewable Energy
         </p>
         <p className="mt-4 text-lg text-gray-600">
           From community analysis to AI-powered recommendations and expert guidance
@@ -28,19 +44,19 @@ const FeaturesSection = () => (
           </p>
           <ul className="mt-6 space-y-3 text-gray-700">
             <li className="flex items-start gap-3">
-              <span className="text-[#FC7019] font-bold">📍</span>
+              <MapPin className="mt-1 h-5 w-5 text-[#FC7019]" />
               <span>Geographic location and climate patterns</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-[#FC7019] font-bold">⚡</span>
+              <Zap className="mt-1 h-5 w-5 text-[#FC7019]" />
               <span>Available resources (solar, wind, hydro potential)</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-[#FC7019] font-bold">👥</span>
+              <Users className="mt-1 h-5 w-5 text-[#FC7019]" />
               <span>Community population and energy demand</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-[#FC7019] font-bold">🏗️</span>
+              <Building2 className="mt-1 h-5 w-5 text-[#FC7019]" />
               <span>Infrastructure readiness and grid connectivity</span>
             </li>
           </ul>
@@ -66,8 +82,10 @@ const FeaturesSection = () => (
               {/* System Recommendation */}
               <div className="bg-white rounded-lg p-4 border-l-4 border-[#FC7019]">
                 <p className="text-sm font-semibold text-gray-600">Recommended System</p>
-                <p className="text-2xl font-bold text-[#131B28] mt-2">
-                  ☀️ Hybrid Solar + Wind
+                <p className="text-2xl font-bold text-[#131B28] mt-2 flex items-center gap-3">
+                  <Sun className="h-6 w-6 text-[#FC7019]" />
+                  <Wind className="h-6 w-6 text-blue-500" />
+                  <span>Hybrid Solar + Wind</span>
                 </p>
                 <p className="text-xs text-gray-600 mt-1">
                   Optimal for your location and resources
@@ -120,8 +138,9 @@ const FeaturesSection = () => (
               </div>
 
               {/* CTA */}
-              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors">
-                View Full Proposal →
+              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <span>View Full Proposal</span>
+                <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -140,30 +159,30 @@ const FeaturesSection = () => (
           
           <div className="mt-6 space-y-4">
             <div className="flex gap-3">
-              <span className="text-2xl">🔍</span>
+              <Globe2 className="mt-1 h-6 w-6 text-[#FC7019]" />
               <div>
-                <p className="font-semibold text-[#131B28]">Evaluate Location & Geography</p>
+                <p className="font-semibold text-[#131B28]">Evaluate Location &amp; Geography</p>
                 <p className="text-sm text-gray-600">Analyze climate, terrain, and renewable potential</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="mt-1 h-6 w-6 text-[#FC7019]" />
               <div>
                 <p className="font-semibold text-[#131B28]">Calculate Energy Demand</p>
                 <p className="text-sm text-gray-600">Estimate population energy needs based on infrastructure</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-2xl">⚡</span>
+              <Sparkles className="mt-1 h-6 w-6 text-[#FC7019]" />
               <div>
                 <p className="font-semibold text-[#131B28]">Recommend Optimal System</p>
                 <p className="text-sm text-gray-600">Solar, wind, hydro, or hybrid—matched to your resources</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-2xl">💰</span>
+              <Wallet className="mt-1 h-6 w-6 text-[#FC7019]" />
               <div>
-                <p className="font-semibold text-[#131B28]">Generate Cost & ROI Analysis</p>
+                <p className="font-semibold text-[#131B28]">Generate Cost &amp; ROI Analysis</p>
                 <p className="text-sm text-gray-600">Detailed breakdown with payback period projections</p>
               </div>
             </div>
@@ -181,7 +200,7 @@ const FeaturesSection = () => (
             Personal Energy Consultant Chatbot
           </h3>
           <p className="mt-4 text-lg text-gray-700">
-            Chat with our AI energy consultant to get personalized answers based on your community's unique profile and proposal. Ask questions, get optimization tips, and receive expert guidance on maximizing energy generation and ROI.
+            Chat with our AI energy consultant to get personalized answers based on your community&apos;s unique profile and proposal. Ask questions, get optimization tips, and receive expert guidance on maximizing energy generation and ROI.
           </p>
           
           <div className="mt-6 space-y-3">
@@ -189,23 +208,23 @@ const FeaturesSection = () => (
             <ul className="space-y-2 text-gray-700">
               <li className="flex gap-2">
                 <span className="text-[#FC7019]">💬</span>
-                <span>"Which renewable source is best for our barangay?"</span>
+                <span>&quot;Which renewable source is best for our barangay?&quot;</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#FC7019]">💬</span>
-                <span>"How can we maximize energy output?"</span>
+                <span>&quot;How can we maximize energy output?&quot;</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#FC7019]">💬</span>
-                <span>"What's the expected payback period?"</span>
+                <span>&quot;What&apos;s the expected payback period?&quot;</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#FC7019]">💬</span>
-                <span>"How do we maintain the system efficiently?"</span>
+                <span>&quot;How do we maintain the system efficiently?&quot;</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#FC7019]">💬</span>
-                <span>"What government incentives are available?"</span>
+                <span>&quot;What government incentives are available?&quot;</span>
               </li>
             </ul>
           </div>
@@ -222,7 +241,7 @@ const FeaturesSection = () => (
                 </div>
                 <div className="flex-1 bg-gray-100 rounded-lg p-3 rounded-tl-none">
                   <p className="text-sm text-gray-800">
-                    Hello! I'm your AI Energy Consultant. I've analyzed your community profile and generated a solar-wind hybrid proposal. How can I help optimize your energy generation today?
+                    Hello! I&apos;m your AI Energy Consultant. I&apos;ve analyzed your community profile and generated a solar-wind hybrid proposal. How can I help optimize your energy generation today?
                   </p>
                 </div>
               </div>
@@ -259,7 +278,7 @@ const FeaturesSection = () => (
                     💡 How to maximize energy output?
                   </button>
                   <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    💰 What's the payback period?
+                    💰 What&apos;s the payback period?
                   </button>
                   <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
                     🎯 Maintenance requirements?
@@ -281,6 +300,97 @@ const FeaturesSection = () => (
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+  {/* STEP 4: NFC & Wallet (Residents) */}
+      <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="lg:w-1/2 w-full flex flex-col sm:flex-row gap-8 items-center justify-center">
+          <div className="mockup-phone transform -rotate-3">
+            <div className="mockup-phone-screen space-y-4">
+              <h3 className="text-xl font-bold text-[#131B28]">
+                My IslaGrid Wallet
+              </h3>
+              <div className="bg-[#FC7019] text-white p-4 rounded-lg">
+                <p className="text-sm uppercase">Current Balance</p>
+                <p className="text-3xl font-bold">₱ 1,482.50</p>
+              </div>
+              <h4 className="font-bold text-gray-800 pt-2">
+                Recent Transactions
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span>SM Supermarket</span>
+                  <span className="font-medium text-red-600">-₱ 500.00</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Community Profit Share</span>
+                  <span className="font-medium text-green-600">+₱ 750.00</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Local Bakery</span>
+                  <span className="font-medium text-red-600">-₱ 120.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-80 h-48 bg-linear-to-br from-gray-700 to-gray-900 rounded-2xl p-6 flex flex-col justify-between shadow-2xl transform rotate-3">
+            <div>
+              <span className="text-white font-bold text-xl">IslaGrid</span>
+              <span className="text-gray-300 text-sm float-right font-mono">
+                NFC
+              </span>
+            </div>
+            <div className="w-10 h-8 bg-yellow-400 rounded-md"></div>
+            <div>
+              <p className="text-gray-400 text-sm font-mono">
+                1234 5678 9012 3456
+              </p>
+              <p className="text-white text-lg font-medium">JUAN DELA CRUZ</p>
+            </div>
+          </div>
+        </div>
+        <div className="lg:w-1/2 lg:pr-10">
+          <span className="inline-flex items-center px-4 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+            Step 4: NFC & Wallet
+          </span>
+          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
+            Resident NFC Card & Wallet
+          </h3>
+          <p className="mt-4 text-lg text-gray-700">
+            Residents receive an NFC-linked IslaGrid card and a simple web wallet. Earnings from surplus energy are credited instantly and can be used to pay bills or spend at partner merchants — putting value back into the community.
+          </p>
+          <p className="mt-4 text-lg text-gray-700">
+            The wallet shows real-time balances, transaction history, and redemption options so households stay in control.
+          </p>
+        </div>
+      </div>
+
+  {/* STEP 5: Merchant Network (Partners) */}
+      <div className="mt-20">
+        <div className="max-w-4xl mx-auto text-center">
+          <span className="inline-flex items-center px-4 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+            Step 5: Merchant Network
+          </span>
+          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">Local Merchant Partnership</h3>
+          <p className="mt-4 text-lg text-gray-700">We partner with local SMEs so residents can spend energy credits at nearby shops, markets, and service providers — supporting local commerce while increasing utility for IslaGrid credits.</p>
+        </div>
+        <div className="mt-8 flex flex-wrap justify-center items-center gap-6">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
+            <Store className="h-10 w-10 text-[#FC7019] mb-3" />
+            <p className="text-gray-900 font-semibold">Barangay Co-op Mart</p>
+            <p className="text-xs text-gray-500 mt-1">Everyday essentials paid with IslaGrid credits</p>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
+            <Coffee className="h-10 w-10 text-[#FC7019] mb-3" />
+            <p className="text-gray-900 font-semibold">Coastal Brew Collective</p>
+            <p className="text-xs text-gray-500 mt-1">Neighborhood café honoring clean-energy rewards</p>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
+            <Stethoscope className="h-10 w-10 text-[#FC7019] mb-3" />
+            <p className="text-gray-900 font-semibold">HealthLink Pharmacy Coop</p>
+            <p className="text-xs text-gray-500 mt-1">Affordable wellness supported by local energy credits</p>
           </div>
         </div>
       </div>
