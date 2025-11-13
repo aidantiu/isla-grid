@@ -6,8 +6,11 @@ export type Message = {
   timestamp: number; // timestamp of the message
 };
 
+export type CreateMessageDTO = Omit<Message, "messageId" | "chatId" | "timestamp">;
+
+
 export type Chat = {
-  chatHistoryId: string; // identifier of the chat 
+  chatId: string; // identifier of the chat 
   userId: string; // id of the user who is the owner of the chat. users can have multiple chats 
   messages: Message[]; // list of messages sent on the chat 
   createdAt: number; // creation date of the chat 
