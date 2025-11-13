@@ -5,7 +5,7 @@ import {
   deleteContext,
   getContext,
   updateContext,
-} from "@/features/contexts/contextsEndpoints";
+} from "@/lib/apiEndpoints/userContextsEndpoints";
 import { Context } from "@/types/userContextsType";
 import React from "react";
 
@@ -42,7 +42,7 @@ const page = () => {
     const userId = inputRef.current?.value as string;
 
     console.log("getting the context of user", userId);
-    const result = await getContext("mock_auth_token", userId);
+    const result = await getContext("mock_auth_token" );
 
     console.log(result);
   };
@@ -50,7 +50,7 @@ const page = () => {
   const handleDeleteContext = async () => {
     const userId = inputRef.current?.value as string;
     console.log("deleting the context of user", userId);
-    const result = await deleteContext("mock_auth_token", userId);
+    const result = await deleteContext("mock_auth_token" );
 
     console.log(result);
   };

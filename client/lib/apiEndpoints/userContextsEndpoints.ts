@@ -1,7 +1,6 @@
 import { ApiRequest, ApiResponse } from "@/types/apiTypes";
 import { Context } from "@/types/userContextsType";
 
-
 export const createContext = async (authToken: string, context: Context) => {
   const requestBody: ApiRequest<Context> = {
     payload: context,
@@ -28,8 +27,8 @@ export const createContext = async (authToken: string, context: Context) => {
   return newContext;
 };
 
-export const getContext = async (authToken: string, userId: string) => {
-  const result = await fetch(`http://localhost:8000/api/contexts/${userId}`, {
+export const getContext = async (authToken: string ) => {
+  const result = await fetch(`http://localhost:8000/api/contexts`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -54,8 +53,7 @@ export const updateContext = async (authToken: string, newContext: Context) => {
     payload: newContext,
   };
 
-  const userId = newContext.userId
-  const result = await fetch(`http://localhost:8000/api/contexts/${userId}`, {
+  const result = await fetch(`http://localhost:8000/api/contexts/`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -76,8 +74,8 @@ export const updateContext = async (authToken: string, newContext: Context) => {
   return updatedContext;
 };
 
-export const deleteContext = async (authToken: string, userId: string) => {
-  const result = await fetch(`http://localhost:8000/api/contexts/${userId}`, {
+export const deleteContext = async (authToken: string) => {
+  const result = await fetch(`http://localhost:8000/api/contexts/ `, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
