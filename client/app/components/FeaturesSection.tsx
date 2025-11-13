@@ -318,47 +318,6 @@ const FeaturesSection = () => {
       <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
         <div className="lg:w-1/2 lg:pr-10">
           <span className="inline-flex items-center px-4 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
-            Step 3: Consult & Optimize
-          </span>
-          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
-            Personal Energy Consultant Chatbot
-          </h3>
-          <p className="mt-4 text-lg text-gray-700">
-            Chat with our AI energy consultant to get personalized answers based on your community&apos;s unique profile and proposal. Ask questions, get optimization tips, and receive expert guidance on maximizing energy generation and ROI.
-          </p>
-          
-          <div className="mt-6 space-y-3">
-            <p className="font-semibold text-[#131B28]">Common Questions Answered:</p>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;Which renewable source is best for our barangay?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;How can we maximize energy output?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;What&apos;s the expected payback period?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;How do we maintain the system efficiently?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;What government incentives are available?&quot;</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* STEP 3: Consult & Optimize */}
-      <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-        <div className="lg:w-1/2 lg:pr-10">
-          <span className="inline-flex items-center px-4 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
             {t.step3Badge}
           </span>
           <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
@@ -450,36 +409,6 @@ const FeaturesSection = () => {
                   </button>
                 </div>
               </div>
-
-              {/* Suggested Questions */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-xs font-semibold text-gray-600 mb-3">Suggested Questions:</p>
-                <div className="space-y-2">
-                  <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    💡 How to maximize energy output?
-                  </button>
-                  <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    💰 What&apos;s the payback period?
-                  </button>
-                  <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    🎯 Maintenance requirements?
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Input Field */}
-            <div className="mt-4 border-t border-gray-200 pt-4">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Ask your question..."
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FC7019]"
-                />
-                <button className="bg-[#FC7019] hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                  Send
-                </button>
-              </div>
             </div>
 
             {/* Input Field */}
@@ -507,34 +436,6 @@ const FeaturesSection = () => {
           </span>
           <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">{t.step4Title}</h3>
           <p className="mt-4 text-lg text-gray-700">{t.step4Description}</p>
-        </div>
-        <div className="mt-8 flex flex-wrap justify-center items-center gap-6">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
-            <Store className="h-10 w-10 text-[#FC7019] mb-3" />
-            <p className="text-gray-900 font-semibold">Barangay Co-op Mart</p>
-            <p className="text-xs text-gray-500 mt-1">Everyday essentials paid with IslaGrid credits</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
-            <Coffee className="h-10 w-10 text-[#FC7019] mb-3" />
-            <p className="text-gray-900 font-semibold">Coastal Brew Collective</p>
-            <p className="text-xs text-gray-500 mt-1">Neighborhood café honoring clean-energy rewards</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
-            <Stethoscope className="h-10 w-10 text-[#FC7019] mb-3" />
-            <p className="text-gray-900 font-semibold">HealthLink Pharmacy Coop</p>
-            <p className="text-xs text-gray-500 mt-1">Affordable wellness supported by local energy credits</p>
-          </div>
-        </div>
-      </div>
-
-  {/* STEP 4: Merchant Network (Partners) */}
-      <div className="mt-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-flex items-center px-4 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-            Step 4: Merchant Network
-          </span>
-          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">Local Merchant Partnership</h3>
-          <p className="mt-4 text-lg text-gray-700">We partner with local SMEs so residents can spend energy credits at nearby shops, markets, and service providers — supporting local commerce while increasing utility for IslaGrid credits.</p>
         </div>
         <div className="mt-8 flex flex-wrap justify-center items-center gap-6">
           <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
