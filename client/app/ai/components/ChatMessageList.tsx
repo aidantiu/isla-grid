@@ -94,7 +94,7 @@ const ChatMessageList = ({
                     <div className="text-sm leading-relaxed md:text-base">
                       {message.content.split("\n").map((line, index) => (
                         <p
-                          key={`${message.id}-${index}`}
+                          key={index}
                           className="mb-2 last:mb-0"
                         >
                           {line}
