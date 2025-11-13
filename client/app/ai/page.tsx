@@ -185,7 +185,7 @@ const AiPage = () => {
   const sendPromptToBackend = async (prompt: string): Promise<ChatMessage> => {
     try {
       const userId = "test_user_1";
-      const response = await fetch(`/api/chat`, {
+      const response = await fetch(`http://localhost:8000/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, prompt }),
@@ -197,6 +197,14 @@ const AiPage = () => {
       }
 
       const data = await response.json();
+
+      console.log(data);
+      return {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: "yo",
+      };
+
       const output = data.output;
 
       // Try to format nicely
