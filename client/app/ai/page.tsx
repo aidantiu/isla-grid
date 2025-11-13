@@ -237,7 +237,7 @@ const AiPage = () => {
   };
 
   return (
-    <div className="relative flex h-screen bg-linear-to-br from-black via-[#141414] to-black text-white">
+  <div className="relative flex h-screen bgbg-linear-to-brm-white via-[#FFF5EB] to-white text-gray-900">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/60 lg:hidden"
@@ -265,11 +265,11 @@ const AiPage = () => {
               <button
                 type="button"
                 onClick={handleResetConversation}
-                className="flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white/70 transition hover:border-[#FC7019] hover:text-white"
+                className="flex items-center gap-2 rounded-full border border-[#F2D8C3] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600 transition hover:border-[#FC7019] hover:text-[#FC7019]"
               >
                 <RotateCcw className="h-3.5 w-3.5" /> Reset
               </button>
-              <div className="hidden items-center gap-2 rounded-full border border-[#FC7019]/40 bg-[#FC7019]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#FC7019] md:flex">
+              <div className="hidden items-center gap-2 rounded-full border border-[#FC7019]/30 bg-[#FFF5EB] px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#FC7019] md:flex">
                 <Sparkles className="h-3.5 w-3.5" /> IslaGrid Trusted
               </div>
             </div>
