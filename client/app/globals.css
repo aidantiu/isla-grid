@@ -19,8 +19,61 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Inter", var(--font-sans), Arial, Helvetica, sans-serif;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .cursor-blink::after {
+    content: "_";
+    animation: blink 1s step-end infinite;
+  }
+}
+
+@layer components {
+  .mockup-phone {
+    position: relative;
+    width: 300px;
+    height: 600px;
+    background: #111;
+    border-radius: 36px;
+    border: 12px solid #333;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  .mockup-phone-screen {
+    position: absolute;
+    inset: 0;
+    background: #f8fafc;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .mockup-phone::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    z-index: 10;
+  }
 }
