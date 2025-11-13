@@ -1,21 +1,46 @@
-const AboutSection = () => (
-  <section id="about" className="py-24 bg-[#FFFDFA]">
-    <div className="container mx-auto px-6">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-sm font-bold uppercase text-[#FC7019] tracking-widest">
-          About SparkPlug
-        </h2>
-        <p className="mt-3 text-4xl md:text-5xl font-extrabold text-[#131B28]">
-          The Team Behind the Spark
-        </p>
-        <p className="mt-6 text-lg text-gray-700 leading-relaxed">
-          SparkPlug isn't just a company; we're a dedicated team of engineers,
-          community advocates, and sustainability experts. We believe that the
-          future of energy in the Philippines is not just renewable, but also
-          community-owned. We're passionate about building the tools to make
-          that future a reality.
-        </p>
-      </div>
+"use client";
+
+import { useLanguage } from "@/providers/language";
+
+const copy = {
+  en: {
+    title: "About SparkPlug",
+    heading: "The Team Behind the Spark",
+    description: "SparkPlug isn't just a company; we're a dedicated team of engineers, community advocates, and sustainability experts. We believe that the future of energy in the Philippines is not just renewable, but also community-owned. We're passionate about building the tools to make that future a reality.",
+    missionTitle: "Our Mission",
+    missionText: "To provide Filipino communities with the technology and framework to harness their local renewable resources, turning shared geography into shared prosperity and energy independence.",
+    visionTitle: "Our Vision",
+    visionText: "A sustainable and equitable Philippines where every household, barangay, big or small, runs on clean energy that is owned, managed, and benefits the community itself.",
+  },
+  tl: {
+    title: "Tungkol sa SparkPlug",
+    heading: "Ang Koponan sa Likod ng Spark",
+    description: "Ang SparkPlug ay hindi lamang isang kumpanya; kami ay isang dedikadong koponan ng mga inhinyero, tagapagtaguyod ng komunidad, at mga eksperto sa sustainability. Naniniwala kami na ang kinabukasan ng enerhiya sa Pilipinas ay hindi lamang renewable, kundi pag-aari rin ng komunidad. Kami ay masigasig sa pagbuo ng mga kasangkapan upang gawing realidad ang kinabukasang iyon.",
+    missionTitle: "Ang Aming Misyon",
+    missionText: "Bigyan ang mga komunidad ng Pilipino ng teknolohiya at balangkas upang gamitin ang kanilang lokal na renewable resources, na ginagawang shared prosperity at energy independence ang shared geography.",
+    visionTitle: "Ang Aming Pangitain",
+    visionText: "Isang sustainable at patas na Pilipinas kung saan ang bawat sambahayan, barangay, malaki man o maliit, ay gumagana sa malinis na enerhiya na pag-aari, pinamamahalaan, at nakikinabang ang komunidad mismo.",
+  },
+} as const;
+
+const AboutSection = () => {
+  const { language } = useLanguage();
+  const t = copy[language];
+
+  return (
+    <section id="about" className="py-24 bg-[#FFFDFA]">
+      <div className="container mx-auto px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-sm font-bold uppercase text-[#FC7019] tracking-widest">
+            {t.title}
+          </h2>
+          <p className="mt-3 text-4xl md:text-5xl font-extrabold text-[#131B28]">
+            {t.heading}
+          </p>
+          <p className="mt-6 text-lg text-gray-700 leading-relaxed">
+            {t.description}
+          </p>
+        </div>
       <div className="mt-16 grid md:grid-cols-2 gap-8">
   <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl">
           <div className="bg-orange-100 text-[#FC7019] w-12 h-12 rounded-full flex items-center justify-center">
@@ -35,15 +60,13 @@ const AboutSection = () => (
             </svg>
           </div>
           <h3 className="mt-5 text-2xl font-bold text-[#131B28]">
-            Our Mission
+            {t.missionTitle}
           </h3>
           <p className="mt-2 text-gray-700 leading-relaxed">
-            To provide Filipino communities with the technology and framework to
-            harness their local renewable resources, turning shared geography
-            into shared prosperity and energy independence.
+            {t.missionText}
           </p>
         </div>
-  <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl">
           <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -66,16 +89,15 @@ const AboutSection = () => (
               />
             </svg>
           </div>
-          <h3 className="mt-5 text-2xl font-bold text-[#131B28]">Our Vision</h3>
+          <h3 className="mt-5 text-2xl font-bold text-[#131B28]">{t.visionTitle}</h3>
           <p className="mt-2 text-gray-700 leading-relaxed">
-            A sustainable and equitable Philippines where every household, barangay, big or
-            small, runs on clean energy that is owned, managed, and benefits the
-            community itself.
+            {t.visionText}
           </p>
         </div>
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default AboutSection;

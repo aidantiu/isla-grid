@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/providers/language";
 
 const carouselImages = [
   { src: "/cc1.jpg", alt: "Engineers installing solar panels in a barangay" },
@@ -10,10 +11,29 @@ const carouselImages = [
   { src: "/c3.png", alt: "Solar array powering a coastal Philippine village" },
 ];
 
+const copy = {
+  en: {
+    introducing: "Introducing",
+    collaboration: "In collaboration with Meralco Merchant Partnerships",
+    tagline: "A community-driven approach to harness the Philippines renewable energy, built by SparkPlug.",
+    ctaPrimary: "Start your Clean Energy Journey",
+    ctaSecondary: "Meet the AI Consultant",
+  },
+  tl: {
+    introducing: "Ipinapakilala ang",
+    collaboration: "Sa pakikipagtulungan kasama ang Meralco Merchant Partnerships",
+    tagline: "Isang komunidad na namumunong paraan upang gamitin ang renewable energy ng Pilipinas, ginawa ng SparkPlug.",
+    ctaPrimary: "Simulan ang Iyong Paglalakbay sa Clean Energy",
+    ctaSecondary: "Makipag-usap sa AI Consultant",
+  },
+} as const;
+
 const SLIDE_INTERVAL = 6000;
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { language } = useLanguage();
+  const t = copy[language];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,28 +70,27 @@ const HeroSection = () => {
       {/* Content */}
       <div className="container mx-auto px-6 relative z-20">
         <h1 className="text-5xl md:text-7xl font-extrabold text-shadow leading-tight">
-          Introducing <span className="text-[#FC7019]">IslaGrid</span>
+          {t.introducing} <span className="text-[#FC7019]">IslaGrid</span>
         </h1>
         <p className="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-white/70">
-          In collaboration with Philippine SMEs
+          {t.collaboration}
         </p>
         <p className="mt-4 text-xl md:text-2xl max-w-3xl mx-auto text-shadow font-light">
-          A community-driven approach to harness the Philippines renewable
-          energy, built by SparkPlug.
+          {t.tagline}
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#solution"
             className="inline-block bg-[#FC7019] text-white px-10 py-4 rounded-lg text-lg font-semibold shadow-xl hover:brightness-95 transition-all transform hover:-translate-y-1"
           >
-            Start your Clean Energy Journey
+            {t.ctaPrimary}
           </a>
           <a
             href="/ai"
             className="group inline-block border border-white/60 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition-all"
           >
             <span className="flex items-center">
-              <span>Meet the AI Consultant</span>
+              <span>{t.ctaSecondary}</span>
               <span className="ml-0 overflow-hidden flex items-center transition-all duration-300 w-0 group-hover:w-6 group-hover:ml-2">
                 <ArrowRight
                   className="h-5 w-5 translate-x-2 group-hover:translate-x-0 transition-transform duration-300"
