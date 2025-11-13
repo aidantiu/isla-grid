@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { RotateCcw, Sparkles, LogOut } from "lucide-react";
 import Link from "next/link";
 import ChatSidebar from "./components/ChatSidebar";
@@ -16,6 +16,10 @@ import {
   createUserContext,
   getUserContext,
 } from "@/lib/apiEndpoints/userContextsEndpoints";
+import {
+  initializeChat,
+  listAllChatsOfUser,
+} from "@/lib/apiEndpoints/chatEndpoints";
 
 const DEFAULT_ASSISTANT_MESSAGE: ChatMessage = {
   id: "assistant-welcome",
@@ -34,7 +38,7 @@ const SUGGESTED_PROMPTS = [
 type ConversationState = Record<string, ChatMessage[]>;
 
 const AiPage = () => {
-  const { user, state, logout } = useAuth();
+  const { user, state, logout, token } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -44,15 +48,54 @@ const AiPage = () => {
   const [currentConversationId, setCurrentConversationId] = useState("welcome");
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [userContext, setUserContext] = useState<OnboardingData | null>(null);
-  const [conversations, setConversations] = useState<ConversationPreview[]>([
-    {
-      id: "welcome",
-      title: "Fresh Chat",
-      lastMessage: "Ask IslaBot how IslaGrid powers communities.",
-      updatedAt: "Just now",
-      pinned: true,
-    },
-  ]);
+  const [conversations, setConversations] = useState<ConversationPreview[]>([]);
+
+  // loading conversations of the user
+  useEffect(() => {
+    if (token) {
+      const fetchConversations = async () => {
+        try {
+          const chats = await listAllChatsOfUser(token);
+
+          console.log(chats);
+          // converting chats to conversation preview objects
+          const convertedChatsToConversationPreview: ConversationPreview[] =
+            chats.map((chat) => ({
+              id: chat.chatId,
+              title: "Chat title",
+              lastMessage:
+                chat.messages[chat.messages.length - 1]?.content ||
+                "No messages yet",
+              updatedAt: new Date(chat.createdAt).toLocaleString(),
+            }));
+
+          if (chats.length === 0) {
+            const newChat = await initializeChat(token);
+            setConversations([
+              {
+                id: newChat.chatId,
+                title: "New chat title",
+                lastMessage:
+                  newChat.messages[newChat.messages.length - 1].content ||
+                  "No messages yet",
+                updatedAt: new Date(newChat.createdAt).toLocaleString(),
+              },
+            ]);
+            setCurrentConversationId("welcome");
+          } else {
+            setConversations(convertedChatsToConversationPreview);
+            setCurrentConversationId(convertedChatsToConversationPreview[0].id);
+          }
+          console.log(chats);
+        } catch (error) {
+          console.error("Error fetching conversations:", error);
+        }
+      };
+
+      fetchConversations();
+    }
+  }, [token]);
+
   const [messagesByConversation, setMessagesByConversation] =
     useState<ConversationState>({
       welcome: [DEFAULT_ASSISTANT_MESSAGE],
@@ -65,8 +108,6 @@ const AiPage = () => {
   const displayName =
     user?.displayName || user?.email?.split("@")[0] || "Your Account";
   const email = user?.email;
-
-  const { token } = useAuth();
 
   // Check if user is already onboarded
   useEffect(() => {
