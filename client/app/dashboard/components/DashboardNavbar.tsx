@@ -5,8 +5,7 @@ import Link from "next/link";
 
 const DashboardNavbar = () => {
   const links = [
-    { href: "/dashboard", location: "Dashboard" },
-    { href: "/dashboard/ai", location: "Dashboard AI" },
+    { href: "/dashboard/ai", location: "AI" },
     { href: "/dashboard/nfc", location: "NFC Card" },
     { href: "/dashboard/profile", location: "Profile" },
   ];
