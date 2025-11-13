@@ -17,9 +17,12 @@ import {
   getUserContext,
 } from "@/lib/apiEndpoints/userContextsEndpoints";
 import {
+  deleteChat,
   initializeChat,
   listAllChatsOfUser,
+  pushMessageToChat,
 } from "@/lib/apiEndpoints/chatEndpoints";
+import { Chat, CreateMessageDTO, Message } from "@/types/chatTypes";
 
 const DEFAULT_ASSISTANT_MESSAGE: ChatMessage = {
   id: "assistant-welcome",
@@ -44,11 +47,12 @@ const AiPage = () => {
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [onboardingLoading, setOnboardingLoading] = useState(false);
-  const [messageInput, setMessageInput] = useState("");
-  const [currentConversationId, setCurrentConversationId] = useState("welcome");
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [messageInput, setMessageInput] = useState("");
   const [userContext, setUserContext] = useState<OnboardingData | null>(null);
-  const [conversations, setConversations] = useState<ConversationPreview[]>([]);
+
+  const [currentConversationId, setCurrentConversationId] = useState("welcome");
+  const [conversations, setConversations] = useState<Chat[]>([]);
 
   // loading conversations of the user
   useEffect(() => {
@@ -56,35 +60,16 @@ const AiPage = () => {
       const fetchConversations = async () => {
         try {
           const chats = await listAllChatsOfUser(token);
-
-          console.log(chats);
-          // converting chats to conversation preview objects
-          const convertedChatsToConversationPreview: ConversationPreview[] =
-            chats.map((chat) => ({
-              id: chat.chatId,
-              title: "Chat title",
-              lastMessage:
-                chat.messages[chat.messages.length - 1]?.content ||
-                "No messages yet",
-              updatedAt: new Date(chat.createdAt).toLocaleString(),
-            }));
+  
 
           if (chats.length === 0) {
             const newChat = await initializeChat(token);
-            setConversations([
-              {
-                id: newChat.chatId,
-                title: "New chat title",
-                lastMessage:
-                  newChat.messages[newChat.messages.length - 1].content ||
-                  "No messages yet",
-                updatedAt: new Date(newChat.createdAt).toLocaleString(),
-              },
-            ]);
-            setCurrentConversationId("welcome");
+            const newChatList = await listAllChatsOfUser(token);
+            setConversations(newChatList);
+            setCurrentConversationId(newChat.chatId);
           } else {
-            setConversations(convertedChatsToConversationPreview);
-            setCurrentConversationId(convertedChatsToConversationPreview[0].id);
+            setConversations(chats);
+            setCurrentConversationId(chats[0].chatId);
           }
           console.log(chats);
         } catch (error) {
@@ -95,15 +80,6 @@ const AiPage = () => {
       fetchConversations();
     }
   }, [token]);
-
-  const [messagesByConversation, setMessagesByConversation] =
-    useState<ConversationState>({
-      welcome: [DEFAULT_ASSISTANT_MESSAGE],
-    });
-
-  const currentMessages = useMemo(() => {
-    return messagesByConversation[currentConversationId] ?? [];
-  }, [messagesByConversation, currentConversationId]);
 
   const displayName =
     user?.displayName || user?.email?.split("@")[0] || "Your Account";
@@ -153,28 +129,29 @@ const AiPage = () => {
     conversationId: string,
     lastMessage: string
   ) => {
-    setConversations((previous) => {
-      const existing = previous.find(
-        (conversation) => conversation.id === conversationId
-      );
-      const updatedConversation: ConversationPreview = existing
-        ? {
-            ...existing,
-            lastMessage,
-            updatedAt: "Just now",
-          }
-        : {
-            id: conversationId,
-            title: "New Conversation",
-            lastMessage,
-            updatedAt: "Just now",
-          };
+    console.log("update conversation preview called");
+    // setConversations((previous) => {
+    //   const existing = previous.find(
+    //     (conversation) => conversation.id === conversationId
+    //   );
+    //   const updatedConversation: ConversationPreview = existing
+    //     ? {
+    //         ...existing,
+    //         lastMessage,
+    //         updatedAt: "Just now",
+    //       }
+    //     : {
+    //         id: conversationId,
+    //         title: "New Conversation",
+    //         lastMessage,
+    //         updatedAt: "Just now",
+    //       };
 
-      const withoutCurrent = previous.filter(
-        (conversation) => conversation.id !== conversationId
-      );
-      return [updatedConversation, ...withoutCurrent];
-    });
+    //   const withoutCurrent = previous.filter(
+    //     (conversation) => conversation.id !== conversationId
+    //   );
+    //   return [updatedConversation, ...withoutCurrent];
+    // });
   };
 
   const handleSelectConversation = (conversationId: string) => {
@@ -184,71 +161,62 @@ const AiPage = () => {
     }
   };
 
-  const handleCreateConversation = () => {
-    const newId = `conversation-${Date.now()}`;
-    const newPreview: ConversationPreview = {
-      id: newId,
-      title: "Untitled Chat",
-      lastMessage: "Start planning your community energy project.",
-      updatedAt: "Just now",
-    };
+  const handleCreateConversation = async () => {
+    if (!token) {
+      alert("Please log in to create a new conversation.");
+      return;
+    }
 
-    setConversations((previous) => [newPreview, ...previous]);
-    setMessagesByConversation((previous) => ({
-      ...previous,
-      [newId]: [DEFAULT_ASSISTANT_MESSAGE],
-    }));
-    setCurrentConversationId(newId);
+    const newConversation = await initializeChat(token);
+    const defaultMessage: CreateMessageDTO = {
+      content:
+        "Hello! I am IslaBot, your guide to the IslaGrid Meralco Community Energy Ecosystem. Ask me how your barangay can generate, distribute, and benefit from community-owned renewable power.",
+      sender: "bot",
+    };
+    const updatedConversation = await pushMessageToChat(
+      token,
+      newConversation.chatId,
+      defaultMessage
+    );
+
+    const newConversations = await listAllChatsOfUser(token);
+
+    setConversations(newConversations);
+    setCurrentConversationId(newConversation.chatId);
     setMessageInput("");
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setSidebarOpen(false);
     }
   };
 
-  const handleDeleteConversation = (conversationId: string) => {
-    const remainingPreviews = conversations.filter(
-      (conversation) => conversation.id !== conversationId
-    );
+  const handleDeleteConversation = async (conversationId: string) => {
+    // const remainingPreviews = conversations.filter(
+    //   (conversation) => conversation.id !== conversationId
+    // );
 
-    const fallbackConversations =
-      remainingPreviews.length > 0
-        ? remainingPreviews
-        : [
-            {
-              id: "welcome",
-              title: "Fresh Chat",
-              lastMessage: "Ask IslaBot how IslaGrid powers communities.",
-              updatedAt: "Just now",
-              pinned: true,
-            },
-          ];
+    // const fallbackConversations =
+    //   remainingPreviews.length > 0
+    //     ? remainingPreviews
+    //     : [
+    //         {
+    //           id: "welcome",
+    //           title: "Fresh Chat",
+    //           lastMessage: "Ask IslaBot how IslaGrid powers communities.",
+    //           updatedAt: "Just now",
+    //           pinned: true,
+    //         },
+    //       ];
 
-    setConversations(fallbackConversations);
+    if (!token) {
+      alert("Please log in to delete a conversation.");
+      return;
+    }
 
-    setMessagesByConversation((previous) => {
-      const { [conversationId]: _removed, ...rest } = previous;
-      let newMessagesByConversation;
-      if (Object.keys(rest).length > 0) {
-        newMessagesByConversation = rest;
-      } else {
-        newMessagesByConversation = {
-          welcome: [DEFAULT_ASSISTANT_MESSAGE],
-        };
-      }
+    const deletedConversation = await deleteChat(token, conversationId);
 
-      if (conversationId === currentConversationId) {
-        const fallbackId =
-          fallbackConversations.find((conv) =>
-            newMessagesByConversation.hasOwnProperty(conv.id)
-          )?.id ??
-          Object.keys(newMessagesByConversation)[0] ??
-          "welcome";
-        setCurrentConversationId(fallbackId);
-        setIsLoading(false);
-      }
+    const newConversations = await listAllChatsOfUser(token);
 
-      return newMessagesByConversation;
-    });
+    setConversations(newConversations);
   };
 
   const simulateAssistantReply = (
@@ -277,47 +245,63 @@ const AiPage = () => {
     };
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (messageInput.trim().length === 0 || isLoading) {
       return;
     }
+    console.log('messageInput', messageInput);
 
     const conversationId = currentConversationId;
 
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
+    const newMessageDTO : CreateMessageDTO = {
       content: messageInput.trim(),
-    };
+      sender: "user",
+    
+    }
 
-    setMessagesByConversation((previous) => {
-      const current = previous[conversationId] ?? [];
-      return {
-        ...previous,
-        [conversationId]: [...current, userMessage],
-      };
-    });
+    if (!token) {
+      alert("Please log in to send a message.");
+      return;
+    }
+  
 
-    updateConversationPreview(conversationId, messageInput.trim());
+    const updatedChat = await pushMessageToChat(token, conversationId, newMessageDTO);
+
+    const updatedChats = await listAllChatsOfUser(token);
+
+    setConversations(updatedChats);
+
+    
+ 
     setMessageInput("");
     setIsLoading(true);
 
     const shouldUseSearch = webSearchEnabled;
 
     window.setTimeout(
-      () => {
+      async () => {
         const assistantMessage = simulateAssistantReply(
-          userMessage.content,
+          newMessageDTO.content,
           shouldUseSearch
+        ); 
+
+        const formattedMessage : CreateMessageDTO = {
+          content: assistantMessage.content,
+          sender: "bot",
+        };
+        
+
+        const updatedChat = await pushMessageToChat(
+          token,
+          conversationId,
+          formattedMessage
         );
-        setMessagesByConversation((previous) => {
-          const current = previous[conversationId] ?? [];
-          return {
-            ...previous,
-            [conversationId]: [...current, assistantMessage],
-          };
-        });
-        updateConversationPreview(conversationId, assistantMessage.content);
+
+
+        const updatedChats =await  listAllChatsOfUser(token);
+        setConversations(updatedChats);
+
+        // updateConversationPreview(conversationId, assistantMessage.content);
         setIsLoading(false);
       },
       shouldUseSearch ? 1200 : 800
@@ -327,19 +311,7 @@ const AiPage = () => {
   const handleSuggestionPick = (suggestion: string) => {
     setMessageInput(suggestion);
   };
-
-  const handleResetConversation = () => {
-    setMessagesByConversation((previous) => ({
-      ...previous,
-      [currentConversationId]: [DEFAULT_ASSISTANT_MESSAGE],
-    }));
-    updateConversationPreview(
-      currentConversationId,
-      "Ask IslaBot how IslaGrid powers communities."
-    );
-    setMessageInput("");
-    setIsLoading(false);
-  };
+ 
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
     setOnboardingLoading(true);
@@ -479,20 +451,12 @@ const AiPage = () => {
           />
 
           <ChatMessageList
-            messages={currentMessages}
+            messages={conversations.find(
+              (conversation) => conversation.chatId === currentConversationId
+            )?.messages || []}
             isLoading={isLoading}
             suggestions={SUGGESTED_PROMPTS}
-            onSuggestionPick={handleSuggestionPick}
-            onCopyMessage={(messageId) => {
-              const message = currentMessages.find(
-                (item) => item.id === messageId
-              );
-              if (message) {
-                window.navigator.clipboard
-                  .writeText(message.content)
-                  .catch(() => {});
-              }
-            }}
+            onSuggestionPick={handleSuggestionPick} 
             webSearchEnabled={webSearchEnabled}
           />
 

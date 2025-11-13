@@ -1,10 +1,11 @@
 "use client";
 
+import { Chat } from "@/types/chatTypes";
 import { type ConversationPreview } from "./types";
 import { Plus, Trash2, X } from "lucide-react";
 
 interface ChatSidebarProps {
-  conversations: ConversationPreview[];
+  conversations: Chat[];
   currentConversationId: string;
   onSelectConversation: (conversationId: string) => void;
   onCreateConversation: () => void;
@@ -60,18 +61,18 @@ const ChatSidebar = ({
         <div className="flex-1 overflow-y-auto px-3 pb-6">
           <ul className="space-y-2">
             {conversations.map((conversation) => {
-              const isActive = conversation.id === currentConversationId;
+              const isActive = conversation.chatId === currentConversationId;
 
               return (
-                <li key={conversation.id}>
+                <li key={conversation.chatId}>
                   <div
                     role="button"
                     tabIndex={0}
-                    onClick={() => onSelectConversation(conversation.id)}
+                    onClick={() => onSelectConversation(conversation.chatId)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
-                        onSelectConversation(conversation.id);
+                        onSelectConversation(conversation.chatId);
                       }
                     }}
                     className={`group flex w-full cursor-pointer items-start justify-between rounded-xl px-4 py-3 text-left transition ${
@@ -83,9 +84,9 @@ const ChatSidebar = ({
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold">
-                          {conversation.title}
+                          {"Conversation title"}
                         </span>
-                        {conversation.pinned && (
+                        {/* {conversation.pinned && (
                           <span
                             className={`rounded-full px-2 text-[10px] font-semibold uppercase tracking-wide ${
                               isActive
@@ -95,14 +96,14 @@ const ChatSidebar = ({
                           >
                             Pinned
                           </span>
-                        )}
+                        )} */}
                       </div>
                       <p
                         className={`mt-1 line-clamp-2 text-xs ${
                           isActive ? "text-white/80" : "text-gray-500"
                         }`}
                       >
-                        {conversation.lastMessage}
+                        {conversation.messages[0]?.content}
                       </p>
                       <p
                         className={`mt-2 text-[11px] uppercase tracking-wider ${
@@ -116,7 +117,7 @@ const ChatSidebar = ({
                       type="button"
                       onClick={(event) => {
                         event.stopPropagation();
-                        onDeleteConversation(conversation.id);
+                        onDeleteConversation(conversation.chatId);
                       }}
                       className={`rounded-full p-1 transition ${
                         isActive

@@ -4,6 +4,11 @@ export type Message = {
   sender: "user" | "bot"; // sender of the message 
   content: string; // content of the message 
   timestamp: number; // timestamp of the message
+  usedSearch?: boolean;
+  references?:  {
+  title?: string;
+  url: string;
+}[];
 };
 
 export type CreateMessageDTO = Omit<Message, "messageId" | "chatId" | "timestamp">;
