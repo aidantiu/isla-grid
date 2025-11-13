@@ -92,10 +92,14 @@ const ChatMessageList = ({
 
                     <div className="text-sm leading-relaxed md:text-base">
                       {message.content.split("\n").map((line, index) => {
-                        // Simple markdown-like handling for headings and bold text
+                        // Simple markdown-like handling for headings, bold text, and markdown links
                         const isHeading = line.startsWith("## ");
-                        const text = isHeading ? line.replace(/^##\s+/, "") : line;
-                        const segments = text.split(/(\*\*[^*]+\*\*)/g);
+                        const text = isHeading
+                          ? line.replace(/^##\s+/, "")
+                          : line;
+
+                        // First split the line into markdown link vs non-link parts
+                        const linkParts = text.split(/(\[[^\]]+\]\([^\)]+\))/g);
 
                         const headingClasses = isHeading
                           ? "mb-3 text-base md:text-lg font-semibold tracking-tight"
@@ -103,17 +107,43 @@ const ChatMessageList = ({
 
                         return (
                           <p key={index} className={headingClasses}>
-                            {segments.map((segment, i) => {
-                              const match = segment.match(/^\*\*(.*)\*\*$/);
-                              if (match) {
+                            {linkParts.map((part, partIndex) => {
+                              const linkMatch = part.match(/^\[([^\]]+)\]\(([^\)]+)\)$/);
+
+                              if (linkMatch) {
+                                const [, label, href] = linkMatch;
                                 return (
-                                  <span key={i} className="font-semibold">
-                                    {match[1]}
-                                  </span>
+                                  <a
+                                    key={partIndex}
+                                    href={href}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[#1F3A5F] underline-offset-2 hover:text-[#FC7019] hover:underline"
+                                  >
+                                    {label}
+                                  </a>
                                 );
                               }
 
-                              return <span key={i}>{segment}</span>;
+                              // For non-link text, still support **bold** segments
+                              const segments = part.split(/(\*\*[^*]+\*\*)/g);
+
+                              return segments.map((segment, i) => {
+                                const boldMatch = segment.match(/^\*\*(.*)\*\*$/);
+                                if (boldMatch) {
+                                  return (
+                                    <span key={`${partIndex}-${i}`} className="font-semibold">
+                                      {boldMatch[1]}
+                                    </span>
+                                  );
+                                }
+
+                                return (
+                                  <span key={`${partIndex}-${i}`}>
+                                    {segment}
+                                  </span>
+                                );
+                              });
                             })}
                           </p>
                         );
