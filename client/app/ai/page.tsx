@@ -237,7 +237,7 @@ const AiPage = () => {
   };
 
   return (
-  <div className="relative flex h-screen bgbg-linear-to-brm-white via-[#FFF5EB] to-white text-gray-900">
+  <div className="relative flex h-screen bg-linear-to-br from-white via-[#FFF5EB] to-white text-gray-900">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/60 lg:hidden"
