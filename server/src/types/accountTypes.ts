@@ -1,3 +1,5 @@
+// banking types 
+
 
 
 export type Transaction = {
@@ -15,3 +17,6 @@ export type Account = {
     balance: number; // running balance of the account 
     transactions: string[]; // an array of transaction IDs
 }
+
+
+
