@@ -121,7 +121,7 @@ async function generateWithGemini(message: string, prompt: string) {
     throw new Error("Gemini client is not configured");
   }
 
-  const model = geminiClient.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = geminiClient.getGenerativeModel({ model: "gemini-2.0-flash" });
   const result = await model.generateContent(prompt);
   const response = result.response;
   const text = response.text();
@@ -271,7 +271,7 @@ Keep it professional yet accessible for barangay officials.`;
 
   try {
     const model = geminiClient.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.0-flash",
     });
     const result = await model.generateContent(prompt);
     const response = result.response;
