@@ -1,5 +1,5 @@
 import { ApiRequest, ApiResponse } from "@/types/apiTypes";
-import { Chat, Message } from "@/types/chatTypes";
+import { Chat, CreateMessageDTO, Message } from "@/types/chatTypes";
 
 /**
  * creates a chat for the authenticated user
@@ -9,7 +9,7 @@ export const initializeChat = async (authToken: string): Promise<Chat> => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -32,7 +32,7 @@ export const listAllChatsOfUser = async (
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -56,7 +56,7 @@ export const getSpecificChat = async (
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -75,18 +75,42 @@ export const getSpecificChat = async (
 export const pushMessageToChat = async (
   authToken: string,
   chatId: string,
-  message: Message
+  message: CreateMessageDTO
 ): Promise<Chat> => {
-  const requestBody: ApiRequest<Message> = {
+  const requestBody: ApiRequest<CreateMessageDTO> = {
     payload: message,
   };
   const result = await fetch(`http://localhost:8000/api/chats/${chatId}`, {
-    method: "GET",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
     body: JSON.stringify(requestBody),
+  });
+
+  if (!result.ok) {
+    const resultPayload = (await result.json()) as ApiResponse;
+    throw new Error(resultPayload.message);
+  }
+
+  const resultPayload = (await result.json()) as ApiResponse<Chat>;
+
+  const newContext = resultPayload.data as Chat;
+
+  return newContext;
+};
+
+export const deleteChat = async (
+  authToken: string,
+  chatId: string
+): Promise<Chat> => {
+  const result = await fetch(`http://localhost:8000/api/chats/${chatId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${authToken}`
+    },
   });
 
   if (!result.ok) {
