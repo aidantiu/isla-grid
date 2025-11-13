@@ -8,6 +8,7 @@ const authenticate: RequestHandler = async (req, res, next) => {
     // If there's no Bearer token, proceed as unauthenticated
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       req.userId = undefined;
+      req.user = undefined;
       return next();
     }
 
@@ -15,14 +16,18 @@ const authenticate: RequestHandler = async (req, res, next) => {
 
     try {
       const decoded = await getAuth().verifyIdToken(idToken);
+      const user = await getAuth().getUser(decoded.uid);
       req.userId = decoded.uid;
+      req.user = user;
     } catch (err) {
       req.userId = undefined;
+      req.user = undefined;
     }
 
     next();
   } catch (error) {
     req.userId = undefined;
+    req.user = undefined;
     next();
   }
 };

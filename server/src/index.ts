@@ -1,5 +1,5 @@
 import express from "express";
-import { contextRouter } from "./routes/contextRoutes.js";
+import { contextRouter } from "./routes/userContextRoutes.js";
 import cors from "cors";
 import authenticate from "./middlewares/authenticate.js";
 import { errorHandler } from "./middlewares/errorHandler.js";

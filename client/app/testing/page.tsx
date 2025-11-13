@@ -5,7 +5,7 @@ import {
   deleteContext,
   getContext,
   updateContext,
-} from "@/features/contexts/endpoints";
+} from "@/features/contexts/contextsEndpoints";
 import { Context } from "@/types/userContextsType";
 import React from "react";
 
