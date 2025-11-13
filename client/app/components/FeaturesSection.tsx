@@ -8,9 +8,11 @@ import {
   Sparkles,
   Stethoscope,
   Store,
+  Sun,
   Users,
   Wallet,
   Zap,
+  Wind,
 } from "lucide-react";
 import ProposalForm from "./ProposalForm";
 
@@ -22,7 +24,10 @@ const FeaturesSection = () => (
           How It Works
         </h2>
         <p className="mt-3 text-4xl md:text-5xl font-extrabold text-[#131B28]">
-          A 4-Step Journey to Renewable Energy
+          A 5-Step Journey to Renewable Energy
+        </p>
+        <p className="mt-4 text-lg text-gray-600">
+          From community analysis to AI-powered recommendations and expert guidance
         </p>
         <p className="mt-4 text-lg text-gray-600">
           From community analysis to AI-powered recommendations and expert guidance
@@ -158,8 +163,9 @@ const FeaturesSection = () => (
               </div>
 
               {/* CTA */}
-              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors">
-                View Full Proposal →
+              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <span>View Full Proposal</span>
+                <ArrowRight className="h-4 w-4" />
               </button>
             </div>
             <div className="mx-auto mt-4 h-4 w-3/5 rounded-b-3xl bg-slate-700"></div>
@@ -187,7 +193,7 @@ const FeaturesSection = () => (
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="mt-1 h-6 w-6 text-[#FC7019]" />
               <div>
                 <p className="font-semibold text-[#131B28]">Calculate Energy Demand</p>
                 <p className="text-sm text-gray-600">Estimate population energy needs based on infrastructure</p>
