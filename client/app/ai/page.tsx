@@ -152,18 +152,12 @@ const AiPage = () => {
       // If the deleted conversation was the current one, set a valid fallback ID
       if (conversationId === currentConversationId) {
         // Find the first fallbackConversations ID that exists in newMessagesByConversation
-<<<<<<< HEAD
         const fallbackId =
           fallbackConversations.find((conv) =>
             newMessagesByConversation.hasOwnProperty(conv.id)
           )?.id ??
           Object.keys(newMessagesByConversation)[0] ??
           "welcome";
-=======
-        const fallbackId = fallbackConversations.find(conv => newMessagesByConversation.hasOwnProperty(conv.id))?.id
-          ?? Object.keys(newMessagesByConversation)[0]
-          ?? "welcome";
->>>>>>> 4e156314081bbb08a02481f745ab11c15c20f261
         setCurrentConversationId(fallbackId);
         setIsLoading(false);
       }
@@ -172,7 +166,6 @@ const AiPage = () => {
     });
   };
 
-<<<<<<< HEAD
   // const simulateAssistantReply = (
   //   prompt: string,
   //   useSearch: boolean
@@ -236,63 +229,27 @@ ${output.recommendations.map((r: string) => `• ${r}`).join("\n")}
   };
 
   const handleSendMessage = async () => {
-=======
-  const simulateAssistantReply = (
-    prompt: string,
-    useSearch: boolean
-  ): ChatMessage => {
-    const trimmed = prompt.trim();
-    const topic = trimmed.length > 0 ? trimmed : "your request";
-    const snippet = topic.length > 80 ? `${topic.slice(0, 77)}...` : topic;
-
-    return {
-      id: `assistant-${Date.now()}`,
-      role: "assistant",
-      usedSearch: useSearch,
-      content: `Here is what I can share about "${snippet}":\n\n1. Generation — assess solar, hydro, wind, or hybrid potential using the AI-Driven Energy Design Studio.\n2. Distribution — connect community-owned assets to Meralco's grid with smart metering for transparent exports.\n3. Benefit Sharing — route revenues into NFC profit cards so residents experience direct economic uplift.\n\nProvide location, resource data, demand profile, and community stakeholders if you want me to draft a tailored IslaGrid rollout.`,
-    };
-  };
-
-  const handleSendMessage = () => {
->>>>>>> 4e156314081bbb08a02481f745ab11c15c20f261
     if (messageInput.trim().length === 0 || isLoading) {
       return;
     }
 
     const conversationId = currentConversationId;
-<<<<<<< HEAD
     const userMessage: ChatMessage = {
       // REAL ID PLACEHOLDER
       id: "test_user_1",
-=======
-
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
->>>>>>> 4e156314081bbb08a02481f745ab11c15c20f261
       role: "user",
       content: messageInput.trim(),
     };
 
-<<<<<<< HEAD
     setMessagesByConversation((previous) => ({
       ...previous,
       [conversationId]: [...(previous[conversationId] ?? []), userMessage],
     }));
-=======
-    setMessagesByConversation((previous) => {
-      const current = previous[conversationId] ?? [];
-      return {
-        ...previous,
-        [conversationId]: [...current, userMessage],
-      };
-    });
->>>>>>> 4e156314081bbb08a02481f745ab11c15c20f261
 
     updateConversationPreview(conversationId, messageInput.trim());
     setMessageInput("");
     setIsLoading(true);
 
-<<<<<<< HEAD
     try {
       // 👇 Call your real backend (Gemini-powered)
       const assistantMessage = await sendPromptToBackend(userMessage.content);
@@ -311,28 +268,6 @@ ${output.recommendations.map((r: string) => `• ${r}`).join("\n")}
     } finally {
       setIsLoading(false);
     }
-=======
-    const shouldUseSearch = webSearchEnabled;
-
-    window.setTimeout(
-      () => {
-        const assistantMessage = simulateAssistantReply(
-          userMessage.content,
-          shouldUseSearch
-        );
-        setMessagesByConversation((previous) => {
-          const current = previous[conversationId] ?? [];
-          return {
-            ...previous,
-            [conversationId]: [...current, assistantMessage],
-          };
-        });
-        updateConversationPreview(conversationId, assistantMessage.content);
-        setIsLoading(false);
-      },
-      shouldUseSearch ? 1200 : 800
-    );
->>>>>>> 4e156314081bbb08a02481f745ab11c15c20f261
   };
 
   const handleSuggestionPick = (suggestion: string) => {
