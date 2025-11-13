@@ -526,34 +526,6 @@ const FeaturesSection = () => {
           </div>
         </div>
       </div>
-
-  {/* STEP 4: Merchant Network (Partners) */}
-      <div className="mt-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-flex items-center px-4 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-            Step 4: Merchant Network
-          </span>
-          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">Local Merchant Partnership</h3>
-          <p className="mt-4 text-lg text-gray-700">We partner with local SMEs so residents can spend energy credits at nearby shops, markets, and service providers — supporting local commerce while increasing utility for IslaGrid credits.</p>
-        </div>
-        <div className="mt-8 flex flex-wrap justify-center items-center gap-6">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
-            <Store className="h-10 w-10 text-[#FC7019] mb-3" />
-            <p className="text-gray-900 font-semibold">Barangay Co-op Mart</p>
-            <p className="text-xs text-gray-500 mt-1">Everyday essentials paid with IslaGrid credits</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
-            <Coffee className="h-10 w-10 text-[#FC7019] mb-3" />
-            <p className="text-gray-900 font-semibold">Coastal Brew Collective</p>
-            <p className="text-xs text-gray-500 mt-1">Neighborhood café honoring clean-energy rewards</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-44 h-44 flex flex-col justify-center items-center text-center">
-            <Stethoscope className="h-10 w-10 text-[#FC7019] mb-3" />
-            <p className="text-gray-900 font-semibold">HealthLink Pharmacy Coop</p>
-            <p className="text-xs text-gray-500 mt-1">Affordable wellness supported by local energy credits</p>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 );}
