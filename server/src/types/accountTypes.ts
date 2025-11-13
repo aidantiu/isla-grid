@@ -13,7 +13,7 @@ export type Transaction = {
 
 
 export type Account = {
-    accountId : string; // id of the account 
+    userId : string; // id of the account 
     balance: number; // running balance of the account 
     transactions: string[]; // an array of transaction IDs
 }
