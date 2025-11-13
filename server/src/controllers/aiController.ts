@@ -4,10 +4,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import type { NextFunction, Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import {
-  FallbackChatbot,
-  type PortfolioData,
-} from "../lib/fallbackChatbot.js";
+import { FallbackChatbot, type PortfolioData } from "../lib/fallbackChatbot.js";
 
 type ProviderSource = "gemini" | "fallback";
 
@@ -389,9 +386,7 @@ export async function generateProposalHandler(req: Request, res: Response) {
 
     if (missingFields.length > 0) {
       return res.status(400).json({
-        error: `Missing required barangay fields: ${missingFields.join(
-          ", "
-        )}`,
+        error: `Missing required barangay fields: ${missingFields.join(", ")}`,
       });
     }
 
@@ -415,7 +410,8 @@ export async function generateProposalHandler(req: Request, res: Response) {
         barangay: `${barangay.name}, ${barangay.province}`,
         demandMultiplier,
         source,
-        provider: source === "gemini" ? "Google Gemini" : "Smart Local Template",
+        provider:
+          source === "gemini" ? "Google Gemini" : "Smart Local Template",
         timestamp: new Date().toISOString(),
         version: "v1",
       },
