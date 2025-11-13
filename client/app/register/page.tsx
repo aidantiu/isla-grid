@@ -40,6 +40,13 @@ const RegisterPage = () => {
     if (error) alert(error);
   }, [state, user]);
 
+  };
+
+  const handleGoogleSignIn = () => {
+    // TODO: trigger Google OAuth flow
+    console.log("register with Google");
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-white via-[#FFF5EB] to-white px-4 py-10 text-gray-900">
       <div className="grid w-full max-w-5xl gap-10 rounded-3xl border border-[#F2D8C3] bg-white p-6 shadow-xl md:grid-cols-2 md:p-10">
