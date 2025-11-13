@@ -10,3 +10,6 @@ export type UserContext = {
   monthlyExpenses: number;
   appliances: ApplianceUsage[];
 };
+
+
+export type CreateUserContextDTO = Omit<UserContext, 'userId'>;

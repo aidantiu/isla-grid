@@ -6,7 +6,7 @@ import {
   createSuccessApiResponse,
 } from "../utils/apiUtils.js";
 import { ApiRequest } from "../types/apiTypes.js";
-import { UserContext } from "../types/userContextTypes.js";
+import { CreateUserContextDTO, UserContext } from "../types/userContextTypes.js";
 
 export const contextRouter = Router();
 
@@ -23,13 +23,18 @@ contextRouter.post("/", async (req, res) => {
     return res.status(401).json(createErrorApiResponse("Unauthorized"));
   }
 
-  const body = req.body as ApiRequest<UserContext>;
-  const context = body.payload;
-  if (!context) {
+  const body = req.body as ApiRequest<CreateUserContextDTO>;
+  const createUserContextDTO = body.payload;
+  if (!createUserContextDTO) {
     return res
       .status(400)
       .json(createErrorApiResponse("Missing context payload"));
   }
+
+  const context = {
+    ...createUserContextDTO,
+    userId,
+  };
 
   await db.collection("contexts").doc(userId).set(context);
 

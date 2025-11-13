@@ -1,8 +1,11 @@
 import { ApiRequest, ApiResponse } from "@/types/apiTypes";
-import { Context } from "@/types/userContextsType";
+import { CreateUserContextDTO, UserContext } from "@/types/userContextsType";
 
-export const createContext = async (authToken: string, context: Context) => {
-  const requestBody: ApiRequest<Context> = {
+export const createUserContext = async (
+  authToken: string,
+  context: CreateUserContextDTO
+) => {
+  const requestBody: ApiRequest<CreateUserContextDTO> = {
     payload: context,
   };
 
@@ -20,14 +23,14 @@ export const createContext = async (authToken: string, context: Context) => {
     throw new Error(resultPayload.message);
   }
 
-  const resultPayload = (await result.json()) as ApiResponse<Context>;
+  const resultPayload = (await result.json()) as ApiResponse<UserContext>;
 
   const newContext = resultPayload.data;
 
   return newContext;
 };
 
-export const getContext = async (authToken: string ) => {
+export const getUserContext = async (authToken: string) => {
   const result = await fetch(`http://localhost:8000/api/contexts`, {
     method: "GET",
     headers: {
@@ -41,15 +44,18 @@ export const getContext = async (authToken: string ) => {
     throw new Error(resultPayload.message);
   }
 
-  const resultPayload = (await result.json()) as ApiResponse<Context>;
+  const resultPayload = (await result.json()) as ApiResponse<UserContext>;
 
   const newContext = resultPayload.data;
 
   return newContext;
 };
 
-export const updateContext = async (authToken: string, newContext: Context) => {
-  const requestBody: ApiRequest<Context> = {
+export const updateUserContext = async (
+  authToken: string,
+  newContext: CreateUserContextDTO
+) => {
+  const requestBody: ApiRequest<CreateUserContextDTO> = {
     payload: newContext,
   };
 
@@ -67,14 +73,14 @@ export const updateContext = async (authToken: string, newContext: Context) => {
     throw new Error(resultPayload.message);
   }
 
-  const resultPayload = (await result.json()) as ApiResponse<Context>;
+  const resultPayload = (await result.json()) as ApiResponse<UserContext>;
 
   const updatedContext = resultPayload.data;
 
   return updatedContext;
 };
 
-export const deleteContext = async (authToken: string) => {
+export const deleteUserContext = async (authToken: string) => {
   const result = await fetch(`http://localhost:8000/api/contexts/ `, {
     method: "DELETE",
     headers: {
@@ -88,7 +94,7 @@ export const deleteContext = async (authToken: string) => {
     throw new Error(resultPayload.message);
   }
 
-  const resultPayload = (await result.json()) as ApiResponse<Context>;
+  const resultPayload = (await result.json()) as ApiResponse<UserContext>;
 
   const deletedContext = resultPayload.data;
 
