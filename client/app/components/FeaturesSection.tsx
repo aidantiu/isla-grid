@@ -24,9 +24,6 @@ const FeaturesSection = () => (
         <p className="mt-3 text-4xl md:text-5xl font-extrabold text-[#131B28]">
           A 4-Step Journey to Renewable Energy
         </p>
-        <p className="mt-4 text-lg text-gray-600">
-          From community analysis to AI-powered recommendations and expert guidance
-        </p>
       </div>
       {/* STEP 1: Onboard & Analyze */}
       <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
