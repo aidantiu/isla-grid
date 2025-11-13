@@ -176,6 +176,8 @@ const AiPage = () => {
       return;
     }
 
+    const conversationId = currentConversationId;
+
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: "user",
@@ -183,14 +185,14 @@ const AiPage = () => {
     };
 
     setMessagesByConversation((previous) => {
-      const current = previous[currentConversationId] ?? [];
+      const current = previous[conversationId] ?? [];
       return {
         ...previous,
-        [currentConversationId]: [...current, userMessage],
+        [conversationId]: [...current, userMessage],
       };
     });
 
-    updateConversationPreview(currentConversationId, messageInput.trim());
+    updateConversationPreview(conversationId, messageInput.trim());
     setMessageInput("");
     setIsLoading(true);
 
@@ -203,16 +205,13 @@ const AiPage = () => {
           shouldUseSearch
         );
         setMessagesByConversation((previous) => {
-          const current = previous[currentConversationId] ?? [];
+          const current = previous[conversationId] ?? [];
           return {
             ...previous,
-            [currentConversationId]: [...current, assistantMessage],
+            [conversationId]: [...current, assistantMessage],
           };
         });
-        updateConversationPreview(
-          currentConversationId,
-          assistantMessage.content
-        );
+        updateConversationPreview(conversationId, assistantMessage.content);
         setIsLoading(false);
       },
       shouldUseSearch ? 1200 : 800
@@ -237,7 +236,7 @@ const AiPage = () => {
   };
 
   return (
-  <div className="relative flex h-screen bg-linear-to-br from-white via-[#FFF5EB] to-white text-gray-900">
+    <div className="relative flex h-screen bg-linear-to-br from-white via-[#FFF5EB] to-white text-gray-900">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/60 lg:hidden"
