@@ -291,6 +291,7 @@ When generating proposals, structure responses in clear sections with markdown f
     if (messageInput.trim().length === 0 || isLoading) {
       return;
     }
+    console.log("messageInput", messageInput);
 
     const conversationId = currentConversationId;
 
