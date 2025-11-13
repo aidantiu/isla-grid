@@ -26,12 +26,73 @@ const SUGGESTED_PROMPTS = [
 type ConversationState = Record<string, ChatMessage[]>;
 
 const AiPage = () => {
-  const { user, state } = useAuth();
+  const { user, state, token } = useAuth();
 
+  /**
+   * ASK BACKEND AI STUFF
+   */
 
-  
-  console.log(user);
-  console.log(state);
+  const sendPromptToBackend = async (prompt: string): Promise<ChatMessage> => {
+    try {
+      const userId = "test_user_1";
+      const response = await fetch(`http://localhost:8000/api/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, prompt }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Chat request failed");
+      }
+
+      const data = await response.json();
+
+      console.log(data);
+      return {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: "yo",
+      };
+
+      const output = data.output;
+
+      // Try to format nicely
+      const formattedContent = output.recommendations
+        ? `
+Here’s your personalized analysis:
+      
+**Recommendations**
+${output.recommendations.map((r: string) => `• ${r}`).join("\n")}
+
+**Best Fit Energy Type:** ${output.bestFitEnergyType}
+**Estimated Savings:** ${output.estimatedSavings}
+`
+        : output.rawText || "No structured response received.";
+
+      return {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: formattedContent,
+      };
+    } catch (error: any) {
+      console.error("Chat request error:", error);
+      return {
+        id: `assistant-error-${Date.now()}`,
+        role: "assistant",
+        content:
+          " Sorry! Something went wrong while fetching data from the energy consultant service.",
+      };
+    }
+  };
+
+  /**
+   *
+   * EMS
+   */
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -189,60 +250,6 @@ const AiPage = () => {
   //     content: `Here is what I can share about "${snippet}":\n\n1. Generation — assess solar, hydro, wind, or hybrid potential using the AI-Driven Energy Design Studio.\n2. Distribution — connect community-owned assets to Meralco's grid with smart metering for transparent exports.\n3. Benefit Sharing — route revenues into NFC profit cards so residents experience direct economic uplift.\n\nProvide location, resource data, demand profile, and community stakeholders if you want me to draft a tailored IslaGrid rollout.`,
   //   };
   // };
-
-  const sendPromptToBackend = async (prompt: string): Promise<ChatMessage> => {
-    try {
-      const userId = "test_user_1";
-      const response = await fetch(`http://localhost:8000/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, prompt }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || "Chat request failed");
-      }
-
-      const data = await response.json();
-
-      console.log(data);
-      return {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        content: "yo",
-      };
-
-      const output = data.output;
-
-      // Try to format nicely
-      const formattedContent = output.recommendations
-        ? `
-Here’s your personalized analysis:
-      
-**Recommendations**
-${output.recommendations.map((r: string) => `• ${r}`).join("\n")}
-
-**Best Fit Energy Type:** ${output.bestFitEnergyType}
-**Estimated Savings:** ${output.estimatedSavings}
-`
-        : output.rawText || "No structured response received.";
-
-      return {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        content: formattedContent,
-      };
-    } catch (error: any) {
-      console.error("Chat request error:", error);
-      return {
-        id: `assistant-error-${Date.now()}`,
-        role: "assistant",
-        content:
-          " Sorry! Something went wrong while fetching data from the energy consultant service.",
-      };
-    }
-  };
 
   const handleSendMessage = async () => {
     if (messageInput.trim().length === 0 || isLoading) {

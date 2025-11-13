@@ -13,8 +13,25 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 chatRouter.post("/", async (req, res) => {
+ const { userId, prompt } = req.body;
+
+    if (!userId || !prompt) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing userId or prompt" });
+    }
+
+ const docSnap = await db.collection("contexts").doc(userId).get();
+
+    if (!docSnap.exists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User context not found" });
+    }
+
   res.json({
     success: true,
+    data: { userId, prompt },
     message: "Hello from chat router",
   });
 });
