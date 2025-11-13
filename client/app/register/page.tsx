@@ -1,5 +1,6 @@
 "use client";
 
+import { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
@@ -8,6 +9,23 @@ const REGISTER_IMAGE =
   "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=80";
 
 const RegisterPage = () => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      name: formData.get("name")?.toString().trim() ?? "",
+      email: formData.get("email")?.toString().trim() ?? "",
+      password: formData.get("password")?.toString() ?? "",
+    };
+    // TODO: hand off to registration endpoint
+    console.log("register payload", payload);
+  };
+
+  const handleGoogleSignIn = () => {
+    // TODO: trigger Google OAuth flow
+    console.log("register with Google");
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-white via-[#FFF5EB] to-white px-4 py-10 text-gray-900">
       <div className="grid w-full max-w-5xl gap-10 rounded-3xl border border-[#F2D8C3] bg-white p-6 shadow-xl md:grid-cols-2 md:p-10">
@@ -32,7 +50,7 @@ const RegisterPage = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="name"
@@ -94,6 +112,7 @@ const RegisterPage = () => {
             <div className="flex items-center justify-center">
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#F2D8C3] bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-[#FC7019] hover:text-[#FC7019]"
               >
                 <FcGoogle className="h-5 w-5" aria-hidden="true" />
