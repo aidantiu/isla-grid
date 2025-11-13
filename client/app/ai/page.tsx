@@ -140,19 +140,27 @@ const AiPage = () => {
 
     setMessagesByConversation((previous) => {
       const { [conversationId]: _removed, ...rest } = previous;
+      let newMessagesByConversation;
       if (Object.keys(rest).length > 0) {
-        return rest;
+        newMessagesByConversation = rest;
+      } else {
+        newMessagesByConversation = {
+          welcome: [DEFAULT_ASSISTANT_MESSAGE],
+        };
       }
 
-      return {
-        welcome: [DEFAULT_ASSISTANT_MESSAGE],
-      };
-    });
+      // If the deleted conversation was the current one, set a valid fallback ID
+      if (conversationId === currentConversationId) {
+        // Find the first fallbackConversations ID that exists in newMessagesByConversation
+        const fallbackId = fallbackConversations.find(conv => newMessagesByConversation.hasOwnProperty(conv.id))?.id
+          ?? Object.keys(newMessagesByConversation)[0]
+          ?? "welcome";
+        setCurrentConversationId(fallbackId);
+        setIsLoading(false);
+      }
 
-    if (conversationId === currentConversationId) {
-      setCurrentConversationId(fallbackConversations[0]?.id ?? "welcome");
-      setIsLoading(false);
-    }
+      return newMessagesByConversation;
+    });
   };
 
   const simulateAssistantReply = (
