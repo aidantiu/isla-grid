@@ -31,20 +31,6 @@ const FeaturesSection = () => (
         </div>
       </div>
       <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-        <div className="lg:w-1/2 lg:pr-10">
-          <span className="inline-flex items-center px-4 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-            Step 2: Profit & Empower
-          </span>
-          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
-            NFC Card & Resident Web App
-          </h3>
-          <p className="mt-4 text-lg text-gray-700">
-           Earnings from your excess solar energy are transferred securely through an NFC-linked account, giving you full control over how to use your energy credits. You can apply them as a discount on your next monthly electricity bill or spend your excess credits with partnered local SMEs as a new mode of sustainable payment.
-          </p>
-          <p className="mt-4 text-lg text-gray-700">
-            All transactions, balances, and energy performance are easily accessible through your personal web dashboard, so you always know how much you’re saving and earning.
-          </p>
-        </div>
         <div className="lg:w-1/2 w-full flex flex-col sm:flex-row gap-8 items-center justify-center">
           <div className="w-80 h-48 bg-linear-to-br from-gray-700 to-gray-900 rounded-2xl p-6 flex flex-col justify-between shadow-2xl transform -rotate-3">
             <div>
@@ -89,6 +75,20 @@ const FeaturesSection = () => (
               </div>
             </div>
           </div>
+        </div>
+        <div className="lg:w-1/2 lg:pr-10">
+          <span className="inline-flex items-center px-4 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+            Step 2: Profit & Empower
+          </span>
+          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
+            NFC Card & Resident Web App
+          </h3>
+          <p className="mt-4 text-lg text-gray-700">
+           Earnings from your excess solar energy are transferred securely through an NFC-linked account, giving you full control over how to use your energy credits. You can apply them as a discount on your next monthly electricity bill or spend your excess credits with partnered local SMEs as a new mode of sustainable payment.
+          </p>
+          <p className="mt-4 text-lg text-gray-700">
+            All transactions, balances, and energy performance are easily accessible through your personal web dashboard, so you always know how much you’re saving and earning.
+          </p>
         </div>
       </div>
     </div>
