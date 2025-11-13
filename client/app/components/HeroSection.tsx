@@ -1,14 +1,19 @@
+import Image from "next/image";
+
 const HeroSection = () => (
-  <header
-    className="relative h-screen min-h-[600px] flex items-center justify-center text-center text-white"
-    style={{
-      backgroundImage:
-        "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1508515053969-f3d951233514?auto=format&fit=crop&w=1920&q=80')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}
-  >
-    <div className="container mx-auto px-6">
+  <header className="relative h-screen min-h-[600px] flex items-center justify-center text-center text-white overflow-hidden">
+    {/* Background Image */}
+    <Image
+      src="/hero-bg.jpg"
+      alt="Renewable energy background"
+      fill
+      style={{ objectFit: "cover", objectPosition: "center" }}
+      priority
+    />
+    {/* Gradient Overlay */}
+    <div className="absolute inset-0 bg-black/50 z-10" />
+    {/* Content */}
+    <div className="container mx-auto px-6 relative z-20">
       <h1 className="text-5xl md:text-7xl font-extrabold text-shadow leading-tight">
         Introducing <span className="text-[#FC7019]">IslaGrid</span>
       </h1>
