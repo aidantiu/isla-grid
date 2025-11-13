@@ -31,7 +31,18 @@ app.get('/', (req, res) => {
 
 app.use("/api/contexts", contextRouter);
  
+
+
+
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+
+
+/**
+ * 
+ * 
+ */
