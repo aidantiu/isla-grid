@@ -22,7 +22,7 @@ const FeaturesSection = () => (
           How It Works
         </h2>
         <p className="mt-3 text-4xl md:text-5xl font-extrabold text-[#131B28]">
-          A 5-Step Journey to Renewable Energy
+          A 4-Step Journey to Renewable Energy
         </p>
         <p className="mt-4 text-lg text-gray-600">
           From community analysis to AI-powered recommendations and expert guidance
@@ -131,6 +131,36 @@ const FeaturesSection = () => (
                   </a>
                 </div>
               </div>
+
+              {/* Cost Breakdown */}
+              <div className="bg-white rounded-lg p-4">
+                <p className="text-sm font-semibold text-gray-600 mb-3">Cost Breakdown</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-700">Solar Panels (50%)</span>
+                    <div className="w-24 bg-gray-200 rounded h-2">
+                      <div className="bg-yellow-400 h-2 rounded" style={{width: "50%"}}></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-700">Wind Turbines (30%)</span>
+                    <div className="w-24 bg-gray-200 rounded h-2">
+                      <div className="bg-blue-400 h-2 rounded" style={{width: "30%"}}></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-700">Installation (20%)</span>
+                    <div className="w-24 bg-gray-200 rounded h-2">
+                      <div className="bg-green-400 h-2 rounded" style={{width: "20%"}}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors">
+                View Full Proposal →
+              </button>
             </div>
             <div className="mx-auto mt-4 h-4 w-3/5 rounded-b-3xl bg-slate-700"></div>
             <div className="mx-auto mt-1 h-2 w-2/5 rounded-full bg-slate-500"></div>
@@ -157,7 +187,7 @@ const FeaturesSection = () => (
               </div>
             </div>
             <div className="flex gap-3">
-              <BarChart3 className="mt-1 h-6 w-6 text-[#FC7019]" />
+              <span className="text-2xl">📊</span>
               <div>
                 <p className="font-semibold text-[#131B28]">Calculate Energy Demand</p>
                 <p className="text-sm text-gray-600">Estimate population energy needs based on infrastructure</p>
