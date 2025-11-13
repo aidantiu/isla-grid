@@ -9,7 +9,7 @@ interface ChatMessageListProps {
   messages: Message[];
   isLoading: boolean;
   suggestions: string[];
-  onSuggestionPick: (suggestion: string) => void; 
+  onSuggestionPick: (suggestion: string) => void;
   webSearchEnabled: boolean;
 }
 
@@ -17,7 +17,7 @@ const ChatMessageList = ({
   messages,
   isLoading,
   suggestions,
-  onSuggestionPick, 
+  onSuggestionPick,
   webSearchEnabled,
 }: ChatMessageListProps) => {
   const endRef = useRef<HTMLDivElement>(null);
@@ -91,14 +91,26 @@ const ChatMessageList = ({
                     </div>
 
                     <div className="text-sm leading-relaxed md:text-base">
-                      {message.content.split("\n").map((line, index) => (
-                        <p
-                          key={index}
-                          className="mb-2 last:mb-0"
-                        >
-                          {line}
-                        </p>
-                      ))}
+                      {message.content.split("\n").map((line, index) => {
+                        const segments = line.split(/(\*\*[^*]+\*\*)/g);
+
+                        return (
+                          <p key={index} className="mb-2 last:mb-0">
+                            {segments.map((segment, i) => {
+                              const match = segment.match(/^\*\*(.*)\*\*$/);
+                              if (match) {
+                                return (
+                                  <span key={i} className="font-semibold">
+                                    {match[1]}
+                                  </span>
+                                );
+                              }
+
+                              return <span key={i}>{segment}</span>;
+                            })}
+                          </p>
+                        );
+                      })}
                     </div>
 
                     {isAssistant &&
@@ -129,7 +141,8 @@ const ChatMessageList = ({
                       <button
                         type="button"
                         onClick={() => {
-                          navigator.clipboard.writeText(message.content);}}
+                          navigator.clipboard.writeText(message.content);
+                        }}
                         className="mt-3 flex items-center gap-2 text-xs uppercase tracking-wide text-[#FC7019] transition hover:text-[#D85505]"
                       >
                         <Copy className="h-3.5 w-3.5" /> Copy
