@@ -6,7 +6,7 @@ import {
   createSuccessApiResponse,
 } from "../utils/apiUtils.js";
 import { ApiRequest } from "../types/apiTypes.js";
-import { Context } from "../types/userContexts.js";
+import { Context } from "../types/userContextTypes.js";
 
 export const contextRouter = Router();
 
