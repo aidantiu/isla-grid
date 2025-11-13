@@ -8,11 +8,9 @@ import {
   Sparkles,
   Stethoscope,
   Store,
-  Sun,
   Users,
   Wallet,
   Zap,
-  Wind,
 } from "lucide-react";
 import ProposalForm from "./ProposalForm";
 
@@ -68,81 +66,74 @@ const FeaturesSection = () => (
       {/* STEP 2: AI-Driven Energy Design Studio */}
       <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
         <div className="lg:w-1/2 w-full">
-          {/* Mockup Dashboard */}
-          <div className="bg-linear-to-br from-blue-50 to-green-50 rounded-2xl p-8 shadow-xl">
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="border-b border-gray-200 pb-4">
-                <h4 className="text-xl font-bold text-[#131B28]">
-                  Energy Proposal: Barangay San Juan
-                </h4>
-                <p className="text-sm text-gray-600">AI-Generated Recommendation</p>
-              </div>
-
-              {/* System Recommendation */}
-              <div className="bg-white rounded-lg p-4 border-l-4 border-[#FC7019]">
-                <p className="text-sm font-semibold text-gray-600">Recommended System</p>
-                <p className="text-2xl font-bold text-[#131B28] mt-2 flex items-center gap-3">
-                  <Sun className="h-6 w-6 text-[#FC7019]" />
-                  <Wind className="h-6 w-6 text-blue-500" />
-                  <span>Hybrid Solar + Wind</span>
-                </p>
-                <p className="text-xs text-gray-600 mt-1">
-                  Optimal for your location and resources
-                </p>
-              </div>
-
-              {/* Key Metrics */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-xs font-semibold text-gray-600 uppercase">Annual Output</p>
-                  <p className="text-2xl font-bold text-green-600 mt-2">45,320 kWh</p>
+          {/* AI report presented on a laptop mockup */}
+          <div className="relative mx-auto w-full max-w-xl">
+            <div className="rounded-[28px] border border-slate-800 bg-slate-900 p-4 shadow-2xl shadow-slate-900/40">
+              <div className="rounded-2xl bg-slate-950 p-4">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-red-400"></span>
+                  <span className="h-2 w-2 rounded-full bg-yellow-400"></span>
+                  <span className="h-2 w-2 rounded-full bg-green-400"></span>
                 </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-xs font-semibold text-gray-600 uppercase">Estimated Cost</p>
-                  <p className="text-2xl font-bold text-[#131B28] mt-2">₱800K</p>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-xs font-semibold text-gray-600 uppercase">Monthly Savings</p>
-                  <p className="text-2xl font-bold text-green-600 mt-2">₱50,000</p>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-xs font-semibold text-gray-600 uppercase">Payback Period</p>
-                  <p className="text-2xl font-bold text-[#131B28] mt-2">16 months</p>
-                </div>
-              </div>
-
-              {/* Cost Breakdown */}
-              <div className="bg-white rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-600 mb-3">Cost Breakdown</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700">Solar Panels (50%)</span>
-                    <div className="w-24 bg-gray-200 rounded h-2">
-                      <div className="bg-yellow-400 h-2 rounded" style={{width: "50%"}}></div>
+                <div className="mt-4 rounded-xl bg-white p-6 shadow-lg shadow-slate-900/10">
+                  <div className="flex items-start justify-between border-b border-gray-200 pb-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase text-gray-500">IslaGrid AI Report</p>
+                      <h4 className="mt-1 text-xl font-bold text-[#131B28]">Barangay San Juan Energy Plan</h4>
+                    </div>
+                    <div className="flex items-center gap-1 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-[#FC7019]">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>AI Draft</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700">Wind Turbines (30%)</span>
-                    <div className="w-24 bg-gray-200 rounded h-2">
-                      <div className="bg-blue-400 h-2 rounded" style={{width: "30%"}}></div>
+
+                  <div className="mt-4 space-y-4 text-sm text-gray-700">
+                    <p>
+                      IslaGrid recommends a hybrid solar and wind configuration tailored to Barangay San Juan&apos;s coastal climate, maximizing production while maintaining grid stability.
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-[#FC7019]"></div>
+                        <div>
+                          <p className="font-semibold text-[#131B28]">Projected Annual Output</p>
+                          <p className="text-gray-600">45,320 kWh generated with 18% buffer for demand spikes.</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-[#FC7019]"></div>
+                        <div>
+                          <p className="font-semibold text-[#131B28]">Estimated Investment</p>
+                          <p className="text-gray-600">₱800K total with phased deployment over 4 quarters.</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-[#FC7019]"></div>
+                        <div>
+                          <p className="font-semibold text-[#131B28]">Payback Period</p>
+                          <p className="text-gray-600">Return on investment in 16 months via ₱50,000 monthly savings.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+                      <p className="font-semibold text-[#131B28]">Implementation Guidance</p>
+                      <p className="mt-1 text-gray-600">
+                        Coordinate with local cooperatives for installation permits and leverage IslaGrid&apos;s financing partners for zero upfront cost programs.
+                      </p>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700">Installation (20%)</span>
-                    <div className="w-24 bg-gray-200 rounded h-2">
-                      <div className="bg-green-400 h-2 rounded" style={{width: "20%"}}></div>
-                    </div>
-                  </div>
+
+                  <a
+                    href="#"
+                    className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#FC7019] px-4 py-2 font-semibold text-white transition-colors hover:bg-orange-600"
+                  >
+                    <span>Download Full Proposal</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
                 </div>
               </div>
-
-              {/* CTA */}
-              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                <span>View Full Proposal</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
             </div>
+            <div className="mx-auto mt-4 h-4 w-3/5 rounded-b-3xl bg-slate-700"></div>
+            <div className="mx-auto mt-1 h-2 w-2/5 rounded-full bg-slate-500"></div>
           </div>
         </div>
 
@@ -304,74 +295,11 @@ const FeaturesSection = () => (
         </div>
       </div>
 
-  {/* STEP 4: NFC & Wallet (Residents) */}
-      <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-        <div className="lg:w-1/2 w-full flex flex-col sm:flex-row gap-8 items-center justify-center">
-          <div className="mockup-phone transform -rotate-3">
-            <div className="mockup-phone-screen space-y-4">
-              <h3 className="text-xl font-bold text-[#131B28]">
-                My IslaGrid Wallet
-              </h3>
-              <div className="bg-[#FC7019] text-white p-4 rounded-lg">
-                <p className="text-sm uppercase">Current Balance</p>
-                <p className="text-3xl font-bold">₱ 1,482.50</p>
-              </div>
-              <h4 className="font-bold text-gray-800 pt-2">
-                Recent Transactions
-              </h4>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span>SM Supermarket</span>
-                  <span className="font-medium text-red-600">-₱ 500.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Community Profit Share</span>
-                  <span className="font-medium text-green-600">+₱ 750.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Local Bakery</span>
-                  <span className="font-medium text-red-600">-₱ 120.00</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="w-80 h-48 bg-linear-to-br from-gray-700 to-gray-900 rounded-2xl p-6 flex flex-col justify-between shadow-2xl transform rotate-3">
-            <div>
-              <span className="text-white font-bold text-xl">IslaGrid</span>
-              <span className="text-gray-300 text-sm float-right font-mono">
-                NFC
-              </span>
-            </div>
-            <div className="w-10 h-8 bg-yellow-400 rounded-md"></div>
-            <div>
-              <p className="text-gray-400 text-sm font-mono">
-                1234 5678 9012 3456
-              </p>
-              <p className="text-white text-lg font-medium">JUAN DELA CRUZ</p>
-            </div>
-          </div>
-        </div>
-        <div className="lg:w-1/2 lg:pr-10">
-          <span className="inline-flex items-center px-4 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-            Step 4: NFC & Wallet
-          </span>
-          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
-            Resident NFC Card & Wallet
-          </h3>
-          <p className="mt-4 text-lg text-gray-700">
-            Residents receive an NFC-linked IslaGrid card and a simple web wallet. Earnings from surplus energy are credited instantly and can be used to pay bills or spend at partner merchants — putting value back into the community.
-          </p>
-          <p className="mt-4 text-lg text-gray-700">
-            The wallet shows real-time balances, transaction history, and redemption options so households stay in control.
-          </p>
-        </div>
-      </div>
-
-  {/* STEP 5: Merchant Network (Partners) */}
+  {/* STEP 4: Merchant Network (Partners) */}
       <div className="mt-20">
         <div className="max-w-4xl mx-auto text-center">
           <span className="inline-flex items-center px-4 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-            Step 5: Merchant Network
+            Step 4: Merchant Network
           </span>
           <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">Local Merchant Partnership</h3>
           <p className="mt-4 text-lg text-gray-700">We partner with local SMEs so residents can spend energy credits at nearby shops, markets, and service providers — supporting local commerce while increasing utility for IslaGrid credits.</p>
