@@ -7,6 +7,7 @@ import ChatHeader from "./components/ChatHeader";
 import ChatMessageList from "./components/ChatMessageList";
 import ChatInput from "./components/ChatInput";
 import type { ChatMessage, ConversationPreview } from "./components/types";
+import { useAuth } from "@/providers/authentication";
 
 const DEFAULT_ASSISTANT_MESSAGE: ChatMessage = {
   id: "assistant-welcome",
@@ -25,6 +26,13 @@ const SUGGESTED_PROMPTS = [
 type ConversationState = Record<string, ChatMessage[]>;
 
 const AiPage = () => {
+  const { user, state } = useAuth();
+
+
+  
+  console.log(user);
+  console.log(state);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

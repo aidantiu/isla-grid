@@ -1,7 +1,6 @@
-import express from "express";
-import { readingsRouter } from "./routes/readingsRoute.js";
-import { contextRouter } from "./routes/contextRoutes.js";
-import chatRouter from "./routes/chatRoutes.js";
+import express from "express";  
+import chatRouter from "./routes/chatRoutes.js" 
+import { contextRouter } from './routes/contextRoutes.js';
 import cors from "cors";
 
 const app = express();
@@ -25,9 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/chat", chatRouter);
-
-app.use("/api/readings", readingsRouter);
-
+ 
 app.use("/api/contexts", contextRouter);
 
 // Start the server

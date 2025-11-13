@@ -64,10 +64,17 @@ const ChatSidebar = ({
 
               return (
                 <li key={conversation.id}>
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onSelectConversation(conversation.id)}
-                    className={`group flex w-full items-start justify-between rounded-xl px-4 py-3 text-left transition ${
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onSelectConversation(conversation.id);
+                      }
+                    }}
+                    className={`group flex w-full cursor-pointer items-start justify-between rounded-xl px-4 py-3 text-left transition ${
                       isActive
                         ? "bg-[#FC7019] text-white shadow-md"
                         : "bg-white text-gray-800 shadow-sm hover:bg-[#FFF1E6]"
@@ -120,7 +127,7 @@ const ChatSidebar = ({
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
-                  </button>
+                  </div>
                 </li>
               );
             })}
