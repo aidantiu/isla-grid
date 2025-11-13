@@ -9,7 +9,7 @@ export const initializeChat = async (authToken: string): Promise<Chat> => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -32,7 +32,7 @@ export const listAllChatsOfUser = async (
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -56,7 +56,7 @@ export const getSpecificChat = async (
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -84,7 +84,7 @@ export const pushMessageToChat = async (
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
     body: JSON.stringify(requestBody),
   });

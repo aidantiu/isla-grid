@@ -13,7 +13,7 @@ export const createUserContext = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
     body: JSON.stringify(requestBody),
   });
@@ -35,7 +35,7 @@ export const getUserContext = async (authToken: string) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 
@@ -63,7 +63,7 @@ export const updateUserContext = async (
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
     body: JSON.stringify(requestBody),
   });
@@ -85,7 +85,7 @@ export const deleteUserContext = async (authToken: string) => {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      authToken: authToken,
+      "Authorization": `Bearer ${authToken}`
     },
   });
 

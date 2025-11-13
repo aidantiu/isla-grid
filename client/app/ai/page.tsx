@@ -12,6 +12,10 @@ import type { ChatMessage, ConversationPreview } from "./components/types";
 import UserRequired from "@/components/routeGuards/UserRequired";
 import { useAuth } from "@/providers/authentication";
 import { FaRegUserCircle } from "react-icons/fa";
+import {
+  createUserContext,
+  getUserContext,
+} from "@/lib/apiEndpoints/userContextsEndpoints";
 
 const DEFAULT_ASSISTANT_MESSAGE: ChatMessage = {
   id: "assistant-welcome",
@@ -62,19 +66,20 @@ const AiPage = () => {
     user?.displayName || user?.email?.split("@")[0] || "Your Account";
   const email = user?.email;
 
+  const { token } = useAuth();
+
   // Check if user is already onboarded
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       try {
-        const response = await fetch("/api/user/context");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.contextValue) {
-            setUserContext(data.contextValue);
-            setShowOnboarding(false);
-          }
-        } else if (response.status === 404) {
-          // User context doesn't exist, show onboarding
+        if (!token) {
+          throw new Error("No token found");
+        }
+        const userContext = await getUserContext(token);
+        if (userContext) {
+          setUserContext(userContext);
+          setShowOnboarding(false);
+        } else {
           setShowOnboarding(true);
         }
       } catch (error) {
@@ -298,28 +303,13 @@ const AiPage = () => {
   const handleOnboardingComplete = async (data: OnboardingData) => {
     setOnboardingLoading(true);
     try {
-      const response = await fetch("/api/user/context", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          location: data.location,
-          monthlyIncome: data.monthlyIncome,
-          monthlyExpenses: data.monthlyExpenses,
-          appliances: data.appliances,
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
+      if (token) {
+        const response = await createUserContext(token, data);
         setUserContext(data);
         setShowOnboarding(false);
-      } else {
-        const error = await response.json();
-        console.error("Failed to save onboarding data:", error);
-        alert("Failed to save your profile. Please try again.");
       }
+      setUserContext(data);
+      setShowOnboarding(false);
     } catch (error) {
       console.error("Error saving onboarding data:", error);
       alert("An error occurred. Please try again.");
