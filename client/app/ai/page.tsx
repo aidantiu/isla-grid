@@ -24,13 +24,6 @@ import {
 } from "@/lib/apiEndpoints/chatEndpoints";
 import { Chat, CreateMessageDTO, Message } from "@/types/chatTypes";
 
-const DEFAULT_ASSISTANT_MESSAGE: ChatMessage = {
-  id: "assistant-welcome",
-  role: "assistant",
-  content:
-    "Hello! I am IslaBot, your guide to the IslaGrid Meralco Community Energy Ecosystem. Ask me how your barangay can generate, distribute, and benefit from community-owned renewable power.",
-};
-
 const SUGGESTED_PROMPTS = [
   "Summarize how IslaGrid expands the net-metering program for communities.",
   "What data do we need to generate a proposal for a river-based micro hydro plant?",
@@ -38,10 +31,8 @@ const SUGGESTED_PROMPTS = [
   "Outline the AI-Driven Energy Design Studio workflow from input to output.",
 ];
 
-type ConversationState = Record<string, ChatMessage[]>;
-
 const AiPage = () => {
-  const { user, state, logout, token } = useAuth();
+  const { user, logout, token } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -60,18 +51,13 @@ const AiPage = () => {
       const fetchConversations = async () => {
         try {
           const chats = await listAllChatsOfUser(token);
-  
 
           if (chats.length === 0) {
-            const newChat = await initializeChat(token);
-            const newChatList = await listAllChatsOfUser(token);
-            setConversations(newChatList);
-            setCurrentConversationId(newChat.chatId);
+            await handleCreateConversation();
           } else {
             setConversations(chats);
             setCurrentConversationId(chats[0].chatId);
           }
-          console.log(chats);
         } catch (error) {
           console.error("Error fetching conversations:", error);
         }
@@ -190,23 +176,6 @@ const AiPage = () => {
   };
 
   const handleDeleteConversation = async (conversationId: string) => {
-    // const remainingPreviews = conversations.filter(
-    //   (conversation) => conversation.id !== conversationId
-    // );
-
-    // const fallbackConversations =
-    //   remainingPreviews.length > 0
-    //     ? remainingPreviews
-    //     : [
-    //         {
-    //           id: "welcome",
-    //           title: "Fresh Chat",
-    //           lastMessage: "Ask IslaBot how IslaGrid powers communities.",
-    //           updatedAt: "Just now",
-    //           pinned: true,
-    //         },
-    //       ];
-
     if (!token) {
       alert("Please log in to delete a conversation.");
       return;
@@ -215,6 +184,8 @@ const AiPage = () => {
     const deletedConversation = await deleteChat(token, conversationId);
 
     const newConversations = await listAllChatsOfUser(token);
+    setCurrentConversationId(newConversations[0].chatId);
+    setMessageInput("");
 
     setConversations(newConversations);
   };
@@ -249,30 +220,30 @@ const AiPage = () => {
     if (messageInput.trim().length === 0 || isLoading) {
       return;
     }
-    console.log('messageInput', messageInput);
+    console.log("messageInput", messageInput);
 
     const conversationId = currentConversationId;
 
-    const newMessageDTO : CreateMessageDTO = {
+    const newMessageDTO: CreateMessageDTO = {
       content: messageInput.trim(),
       sender: "user",
-    
-    }
+    };
 
     if (!token) {
       alert("Please log in to send a message.");
       return;
     }
-  
 
-    const updatedChat = await pushMessageToChat(token, conversationId, newMessageDTO);
+    const updatedChat = await pushMessageToChat(
+      token,
+      conversationId,
+      newMessageDTO
+    );
 
     const updatedChats = await listAllChatsOfUser(token);
 
     setConversations(updatedChats);
 
-    
- 
     setMessageInput("");
     setIsLoading(true);
 
@@ -283,13 +254,12 @@ const AiPage = () => {
         const assistantMessage = simulateAssistantReply(
           newMessageDTO.content,
           shouldUseSearch
-        ); 
+        );
 
-        const formattedMessage : CreateMessageDTO = {
+        const formattedMessage: CreateMessageDTO = {
           content: assistantMessage.content,
           sender: "bot",
         };
-        
 
         const updatedChat = await pushMessageToChat(
           token,
@@ -297,8 +267,7 @@ const AiPage = () => {
           formattedMessage
         );
 
-
-        const updatedChats =await  listAllChatsOfUser(token);
+        const updatedChats = await listAllChatsOfUser(token);
         setConversations(updatedChats);
 
         // updateConversationPreview(conversationId, assistantMessage.content);
@@ -311,7 +280,6 @@ const AiPage = () => {
   const handleSuggestionPick = (suggestion: string) => {
     setMessageInput(suggestion);
   };
- 
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
     setOnboardingLoading(true);
@@ -451,12 +419,14 @@ const AiPage = () => {
           />
 
           <ChatMessageList
-            messages={conversations.find(
-              (conversation) => conversation.chatId === currentConversationId
-            )?.messages || []}
+            messages={
+              conversations.find(
+                (conversation) => conversation.chatId === currentConversationId
+              )?.messages || []
+            }
             isLoading={isLoading}
             suggestions={SUGGESTED_PROMPTS}
-            onSuggestionPick={handleSuggestionPick} 
+            onSuggestionPick={handleSuggestionPick}
             webSearchEnabled={webSearchEnabled}
           />
 

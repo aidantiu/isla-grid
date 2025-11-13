@@ -103,14 +103,28 @@ const ChatSidebar = ({
                           isActive ? "text-white/80" : "text-gray-500"
                         }`}
                       >
-                        {conversation.messages[0]?.content}
+                        {
+                          conversation.messages[
+                            conversation.messages.length - 1
+                          ]?.content
+                        }
                       </p>
                       <p
                         className={`mt-2 text-[11px] uppercase tracking-wider ${
                           isActive ? "text-white/70" : "text-gray-400"
                         }`}
                       >
-                        {conversation.updatedAt}
+                        {new Date(
+                          conversation.messages[
+                            conversation.messages.length - 1
+                          ]?.timestamp
+                        ).toLocaleTimeString("en-US", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
                       </p>
                     </div>
                     <button
