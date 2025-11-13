@@ -8,11 +8,9 @@ import {
   Sparkles,
   Stethoscope,
   Store,
-  Sun,
   Users,
   Wallet,
   Zap,
-  Wind,
 } from "lucide-react";
 import ProposalForm from "./ProposalForm";
 
@@ -147,26 +145,51 @@ const FeaturesSection = () => (
                       <div className="bg-yellow-400 h-2 rounded" style={{width: "50%"}}></div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700">Wind Turbines (30%)</span>
-                    <div className="w-24 bg-gray-200 rounded h-2">
-                      <div className="bg-blue-400 h-2 rounded" style={{width: "30%"}}></div>
+
+                  <div className="mt-4 space-y-4 text-sm text-gray-700">
+                    <p>
+                      IslaGrid recommends a hybrid solar and wind configuration tailored to Barangay San Juan&apos;s coastal climate, maximizing production while maintaining grid stability.
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-[#FC7019]"></div>
+                        <div>
+                          <p className="font-semibold text-[#131B28]">Projected Annual Output</p>
+                          <p className="text-gray-600">45,320 kWh generated with 18% buffer for demand spikes.</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-[#FC7019]"></div>
+                        <div>
+                          <p className="font-semibold text-[#131B28]">Estimated Investment</p>
+                          <p className="text-gray-600">₱800K total with phased deployment over 4 quarters.</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-[#FC7019]"></div>
+                        <div>
+                          <p className="font-semibold text-[#131B28]">Payback Period</p>
+                          <p className="text-gray-600">Return on investment in 16 months via ₱50,000 monthly savings.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
+                      <p className="font-semibold text-[#131B28]">Implementation Guidance</p>
+                      <p className="mt-1 text-gray-600">
+                        Coordinate with local cooperatives for installation permits and leverage IslaGrid&apos;s financing partners for zero upfront cost programs.
+                      </p>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700">Installation (20%)</span>
-                    <div className="w-24 bg-gray-200 rounded h-2">
-                      <div className="bg-green-400 h-2 rounded" style={{width: "20%"}}></div>
-                    </div>
-                  </div>
+
+                  <a
+                    href="#"
+                    className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#FC7019] px-4 py-2 font-semibold text-white transition-colors hover:bg-orange-600"
+                  >
+                    <span>Download Full Proposal</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
                 </div>
               </div>
-
-              {/* CTA */}
-              <button className="w-full bg-[#FC7019] hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                <span>View Full Proposal</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
             </div>
             <div className="mx-auto mt-4 h-4 w-3/5 rounded-b-3xl bg-slate-700"></div>
             <div className="mx-auto mt-1 h-2 w-2/5 rounded-full bg-slate-500"></div>
