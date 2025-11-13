@@ -59,7 +59,7 @@ const HeroSection = () => {
           energy, built by SparkPlug.
         </p>
         <a
-          href="#solution"
+          href="/ai"
           className="mt-10 inline-block bg-[#FC7019] text-white px-10 py-4 rounded-lg text-lg font-semibold shadow-xl hover:brightness-95 transition-all transform hover:-translate-y-1"
         >
           Discover The Future of Energy
