@@ -17,20 +17,20 @@ const ChatHeader = ({
   actions,
 }: ChatHeaderProps) => {
   return (
-    <header className="flex items-center justify-between border-b border-white/10 bg-black/40 px-4 py-4 backdrop-blur-md lg:px-10">
+    <header className="flex items-center justify-between border-b border-[#F2D8C3] bg-white/90 px-4 py-4 backdrop-blur-md lg:px-10">
       <div className="flex items-center gap-3">
         {onToggleSidebar && (
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="rounded-lg bg-white/10 p-2 text-white transition hover:bg-white/20 lg:hidden"
+            className="rounded-lg border border-[#F2D8C3] bg-white p-2 text-gray-600 transition hover:bg-[#FFF1E6] lg:hidden"
             aria-label="Toggle sidebar"
           >
             <Menu className="h-5 w-5" />
           </button>
         )}
         <div>
-          <h1 className="text-xl font-semibold text-white md:text-2xl">
+          <h1 className="text-xl font-semibold text-gray-900 md:text-2xl">
             {title}
           </h1>
           {subtitle && (
