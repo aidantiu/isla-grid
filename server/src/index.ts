@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/contexts", contextRouter);
-app.use("/api/chat", chatRouter);
+app.use("/api/chats", chatRouter);
 
 app.use(errorHandler);
 
