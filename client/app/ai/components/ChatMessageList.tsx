@@ -108,7 +108,9 @@ const ChatMessageList = ({
                         return (
                           <p key={index} className={headingClasses}>
                             {linkParts.map((part, partIndex) => {
-                              const linkMatch = part.match(/^\[([^\]]+)\]\(([^\)]+)\)$/);
+                              const linkMatch = part.match(
+                                /^\[([^\]]+)\]\(([^\)]+)\)$/
+                              );
 
                               if (linkMatch) {
                                 const [, label, href] = linkMatch;
@@ -118,7 +120,7 @@ const ChatMessageList = ({
                                     href={href}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-[#1F3A5F] underline-offset-2 hover:text-[#FC7019] hover:underline"
+                                    className="text-[#1F3A5F] underline underline-offset-2 hover:text-[#FC7019]"
                                   >
                                     {label}
                                   </a>
@@ -129,10 +131,14 @@ const ChatMessageList = ({
                               const segments = part.split(/(\*\*[^*]+\*\*)/g);
 
                               return segments.map((segment, i) => {
-                                const boldMatch = segment.match(/^\*\*(.*)\*\*$/);
+                                const boldMatch =
+                                  segment.match(/^\*\*(.*)\*\*$/);
                                 if (boldMatch) {
                                   return (
-                                    <span key={`${partIndex}-${i}`} className="font-semibold">
+                                    <span
+                                      key={`${partIndex}-${i}`}
+                                      className="font-semibold"
+                                    >
                                       {boldMatch[1]}
                                     </span>
                                   );
