@@ -56,8 +56,9 @@ const page = () => {
   };
 
   const handleUpdateContext = async () => {
+    const userId = inputRef.current?.value as string;
     const newContextData: Context = {
-      userId: "test_user_1",
+      userId: userId,
       contextValue: {
         location: "another location after updateeeee",
         monthlyIncome: 1000,
@@ -71,7 +72,6 @@ const page = () => {
       },
     };
 
-    const userId = inputRef.current?.value as string;
     console.log("updating the context of user", userId);
     const result = await updateContext("mock_auth_token", newContextData);
 
