@@ -36,12 +36,8 @@ contextRouter.post("/", async (req, res) => {
           createErrorApiResponse("Invalid or missing fields in request body")
         );
     }
- 
 
-    console.log("before firebase")
     await db.collection("contexts").doc(context.userId).set(context);
-    console.log("after firebase")
-
 
     return res
       .status(201)
