@@ -7,6 +7,8 @@ import {
   type ReactNode,
 } from "react";
 
+const DEMO_GENERATION_DELAY_MS = 2500;
+
 const ProposalForm = () => {
   const [location, setLocation] = useState("");
   const [resource, setResource] = useState("Strong Sunlight (Solar)");
@@ -30,7 +32,7 @@ const ProposalForm = () => {
           </p>
         </div>
       );
-    }, 2500);
+    }, DEMO_GENERATION_DELAY_MS);
   };
 
   const loadingMessage = (
