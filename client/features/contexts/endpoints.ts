@@ -1,6 +1,7 @@
 import { ApiRequest, ApiResponse } from "@/types/apiTypes";
 import { Context } from "@/types/userContextsType";
 
+
 export const createContext = async (authToken: string, context: Context) => {
   const requestBody: ApiRequest<Context> = {
     payload: context,
@@ -53,7 +54,8 @@ export const updateContext = async (authToken: string, newContext: Context) => {
     payload: newContext,
   };
 
-  const result = await fetch("http://localhost:8000/api/contexts", {
+  const userId = newContext.userId
+  const result = await fetch(`http://localhost:8000/api/contexts/${userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

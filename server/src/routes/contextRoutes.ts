@@ -90,6 +90,8 @@ contextRouter.put("/:userId", async (req, res) => {
     const body = req.body as ApiRequest<Context>;
     const updatedData = body.payload;
 
+    console.log("updatedData", updatedData);
+
     const docRef = db.collection("contexts").doc(userId);
     const doc = await docRef.get();
 
@@ -98,7 +100,6 @@ contextRouter.put("/:userId", async (req, res) => {
     }
 
     await docRef.update(updatedData);
- 
 
     return res
       .status(200)
