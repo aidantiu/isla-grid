@@ -1,7 +1,7 @@
 "use client";
 
 import { type ConversationPreview } from "./types";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 
 interface ChatSidebarProps {
   conversations: ConversationPreview[];
@@ -42,7 +42,7 @@ const ChatSidebar = ({
             className="text-gray-500 transition hover:text-gray-700 lg:hidden"
             aria-label="Close sidebar"
           >
-            X
+            <X className="h-5 w-5" />
           </button>
         </div>
 
