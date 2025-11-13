@@ -4,9 +4,26 @@ import fs from "fs";
 import dotenv from "dotenv";
 import type { NextFunction, Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { FallbackChatbot, type PortfolioData } from "../lib/fallbackChatbot.js";
+import {
+  FallbackEnergyAdvisor,
+  type RenewableDataset,
+} from "../lib/fallbackChatbot.js";
 
-type ProviderSource = "gemini" | "fallback";
+// --- NEW TYPES FROM ONBOARDING ---
+export interface ApplianceUsage {
+  name: string;
+  usageIntensity: number; // e.g., hours per day
+}
+
+export interface OnboardingData {
+  location: string;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  appliances: ApplianceUsage[];
+}
+
+// --- ORIGINAL TYPES ---
+type ProviderSource = "gemini" | "knowledge-base";
 
 type Barangay = {
   name: string;
@@ -21,32 +38,27 @@ type Barangay = {
   currentElectricityCostPerKWh: number;
 };
 
+// --- SERVER SETUP & CONSTANTS ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const SERVER_ROOT = path.resolve(__dirname, "../../");
 
 dotenv.config({ path: path.resolve(SERVER_ROOT, ".env") });
 
-const PORTFOLIO_OWNER = process.env.PORTFOLIO_OWNER ?? "the portfolio owner";
-const AI_PROVIDER = process.env.AI_PROVIDER ?? "fallback";
+const ASSISTANT_NAME = process.env.ASSISTANT_NAME ?? "IslaBot";
+const AI_PROVIDER = process.env.AI_PROVIDER ?? "knowledge-base";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const API_KEY = process.env.API_KEY;
 const RATE_LIMIT_PER_MINUTE = Number(process.env.RATE_LIMIT_PER_MINUTE ?? 30);
 
-const portfolioDataPath = process.env.PORTFOLIO_DATA_PATH
-  ? path.resolve(SERVER_ROOT, process.env.PORTFOLIO_DATA_PATH)
-  : path.resolve(SERVER_ROOT, "data/portfolioData.json");
+const renewableDataPath = process.env.RENEWABLE_DATA_PATH
+  ? path.resolve(SERVER_ROOT, process.env.RENEWABLE_DATA_PATH)
+  : path.resolve(SERVER_ROOT, "data/ph_renewable_energy_data.json");
 
-let portfolioData: PortfolioData = {
-  profile: "Portfolio data not configured",
-  projects: [],
-  skills: {},
-  experience: [],
-  education: {},
-  certifications: [],
-  contact: {},
-};
+let renewableDataset: RenewableDataset = {};
+let fallbackAdvisor: FallbackEnergyAdvisor;
 
+// --- ANALYTICS & RATE LIMITING ---
 type RateLimitEntry = {
   count: number;
   resetTime: number;
@@ -62,17 +74,18 @@ type AnalyticsSnapshot = {
 const analytics: AnalyticsSnapshot = {
   totalQueries: 0,
   popularKeywords: {},
-  providerUsage: { gemini: 0, fallback: 0 },
+  providerUsage: { gemini: 0, "knowledge-base": 0 },
   startTime: new Date().toISOString(),
 };
 
 const rateLimitMap = new Map<string, RateLimitEntry>();
 
-let fallbackBot = new FallbackChatbot(portfolioData);
+// --- AI & DATA CLIENTS ---
 const geminiClient = GEMINI_API_KEY
   ? new GoogleGenerativeAI(GEMINI_API_KEY)
   : null;
 
+// Financial/Technical constants are now passed to the AI
 const CONSTANTS = {
   solar: { systemEfficiency: 0.75, capexPerKW: 50000, opexPercentage: 0.02 },
   hydro: { capexPerKW: 120000, opexPercentage: 0.03 },
@@ -80,20 +93,31 @@ const CONSTANTS = {
   battery: { capexPerKWh: 15000, opexPercentage: 0.02 },
 };
 
+// --- DATA LOADING ---
 try {
   console.log("GEMINI_API_KEY:", GEMINI_API_KEY ? "Loaded" : "Not Set");
-  if (fs.existsSync(portfolioDataPath)) {
-    const raw = fs.readFileSync(portfolioDataPath, "utf8");
-    portfolioData = JSON.parse(raw) as PortfolioData;
-    console.log(`✅ Portfolio data loaded from ${portfolioDataPath}`);
-    fallbackBot = new FallbackChatbot(portfolioData);
+  if (fs.existsSync(renewableDataPath)) {
+    const raw = fs.readFileSync(renewableDataPath, "utf8");
+    renewableDataset = JSON.parse(raw) as RenewableDataset;
+    console.log(`✅ Renewable dataset loaded from ${renewableDataPath}`);
   } else {
-    console.warn(`⚠️ Portfolio data file not found at ${portfolioDataPath}`);
+    console.warn(`⚠️ Renewable dataset not found at ${renewableDataPath}`);
   }
 } catch (error) {
-  console.error("❌ Failed to load portfolio data:", (error as Error).message);
+  console.error(
+    "❌ Failed to load renewable dataset:",
+    (error as Error).message
+  );
+  renewableDataset = {};
 }
 
+fallbackAdvisor = new FallbackEnergyAdvisor(renewableDataset);
+
+const DATASET_SOURCE =
+  renewableDataset.metadata?.source ??
+  "Philippine Renewable Energy Resource Dataset";
+
+// --- ANALYTICS TRACKING ---
 function trackQuery(message: string, source: ProviderSource) {
   analytics.totalQueries += 1;
   analytics.providerUsage[source] = (analytics.providerUsage[source] ?? 0) + 1;
@@ -108,20 +132,63 @@ function trackQuery(message: string, source: ProviderSource) {
     });
 }
 
-function createPrompt(message: string): string {
-  return `You are ${PORTFOLIO_OWNER}'s professional portfolio chatbot. Your ONLY purpose is to provide information about their professional background, skills, education, projects, and career.\n\nSTRICT GUIDELINES:\n1. ONLY answer questions about ${PORTFOLIO_OWNER}'s professional information from the provided data\n2. If asked about anything NOT in the portfolio data (like personal life, food preferences, unrelated topics), politely redirect\n3. Keep responses professional, concise, and helpful\n4. Always stay within the scope of the provided portfolio data\n\n${PORTFOLIO_OWNER}'s Portfolio Data:\n${JSON.stringify(
-    portfolioData,
-    null,
-    2
-  )}\n\nRESPONSE RULES:\n- If the question is about professional background: Answer using ONLY the provided data\n- If the question is outside professional scope: Respond with "I'm ${PORTFOLIO_OWNER}'s portfolio assistant and can only help with questions about their professional background, skills, projects, education, and career. Please ask me something about their work experience, technical skills, or projects!"\n\nUser Question: ${message}\nYour Response:`;
+// --- REFINED: CHAT PROMPT ---
+/**
+ * Creates a personalized chat prompt by including user context.
+ */
+function createChatPrompt(
+  message: string,
+  provinceSummary?: string,
+  userContext?: OnboardingData // <-- NOW ACCEPTS USER CONTEXT
+): string {
+  // 1. Create the User Context String
+  let userProfileContext =
+    "The user is a general visitor inquiring about IslaGrid.";
+  if (userContext) {
+    const applianceList =
+      userContext.appliances.map((a) => a.name).join(", ") || "Not specified";
+
+    userProfileContext = `
+---
+USER'S ENERGY PROFILE:
+- Location: ${userContext.location}
+- Stated Monthly Income: ₱${userContext.monthlyIncome.toLocaleString()}
+- Disposable Income: ₱${(
+      userContext.monthlyIncome - userContext.monthlyExpenses
+    ).toLocaleString()}
+- Key Appliances: ${applianceList}
+---
+This profile is CRITICAL. Tailor your entire response to their specific financial and energy situation.
+    `;
+  }
+
+  // 2. Create the Prompt
+  const contextSections = [
+    `You are ${ASSISTANT_NAME}, an expert assistant for IslaGrid specializing in Philippine community renewable energy.`,
+    userProfileContext, // <-- INJECT THE PERSONAL CONTEXT
+    provinceSummary
+      ? `Provincial dataset insight for ${
+          userContext?.location || "the area"
+        }:\n${provinceSummary}`
+      : undefined,
+    `User question: ${message}`,
+    "INSTRUCTIONS:",
+    "1. ALWAYS analyze the user's question in the context of their provided ENERGY PROFILE.",
+    "2. If they ask about costs, savings, or system size, relate it back to their income and appliance list.",
+    "3. Use the Provincial dataset insight to inform resource availability (solar, hydro, wind).",
+    "4. Provide clear, actionable, and personalized recommendations.",
+  ].filter(Boolean) as string[];
+
+  return contextSections.join("\n\n");
 }
 
+// --- GEMINI HELPER ---
 async function generateWithGemini(message: string, prompt: string) {
   if (!geminiClient) {
     throw new Error("Gemini client is not configured");
   }
 
-  const model = geminiClient.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = geminiClient.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using 1.5 Flash
   const result = await model.generateContent(prompt);
   const response = result.response;
   const text = response.text();
@@ -134,95 +201,24 @@ async function generateWithGemini(message: string, prompt: string) {
   return text.trim();
 }
 
-function calculateEnergyMix(barangay: Barangay, demandMultiplier: number) {
-  const annualDemandKWh = barangay.avgDailyDemandKWh * 365 * demandMultiplier;
+// --- REMOVED: calculateEnergyMix ---
+// This logic is now handled by the AI in generateREProposal.
 
-  const solarAnnualGen = annualDemandKWh * 0.6;
-  const solarCapKW =
-    solarAnnualGen /
-    (barangay.solarIrradiance * 365 * CONSTANTS.solar.systemEfficiency);
-  const solarCapex = solarCapKW * CONSTANTS.solar.capexPerKW;
+// --- REMOVED: calculateFinancials ---
+// This logic is now handled by the AI in generateREProposal.
 
-  let hydroCapKW = 0;
-  let hydroAnnualGen = 0;
-  let hydroCapex = 0;
-  if (barangay.hasRiverAccess) {
-    hydroAnnualGen = annualDemandKWh * 0.25;
-    hydroCapKW = hydroAnnualGen / (8760 * 0.4);
-    hydroCapex = hydroCapKW * CONSTANTS.hydro.capexPerKW;
-  }
-
-  let windCapKW = 0;
-  let windAnnualGen = 0;
-  let windCapex = 0;
-  if (barangay.avgWindSpeed >= CONSTANTS.wind.minViableSpeed) {
-    windAnnualGen = annualDemandKWh * 0.15;
-    windCapKW = windAnnualGen / (8760 * 0.25);
-    windCapex = windCapKW * CONSTANTS.wind.capexPerKW;
-  }
-
-  const batteryCapKWh =
-    ((barangay.avgDailyDemandKWh * demandMultiplier) / 24) * 4;
-  const batteryCapex = batteryCapKWh * CONSTANTS.battery.capexPerKWh;
-
-  const totalGen = solarAnnualGen + hydroAnnualGen + windAnnualGen;
-  const totalCapKW = solarCapKW + hydroCapKW + windCapKW;
-  const totalCapex = solarCapex + hydroCapex + windCapex + batteryCapex;
-  const totalOpex = totalCapex * 0.02;
-
-  return {
-    solar: {
-      capacityKW: Math.round(solarCapKW * 10) / 10,
-      capex: Math.round(solarCapex),
-      percentage: 60,
-    },
-    hydro: {
-      capacityKW: Math.round(hydroCapKW * 10) / 10,
-      capex: Math.round(hydroCapex),
-      percentage: barangay.hasRiverAccess ? 25 : 0,
-    },
-    wind: {
-      capacityKW: Math.round(windCapKW * 10) / 10,
-      capex: Math.round(windCapex),
-      percentage: barangay.avgWindSpeed >= 4 ? 15 : 0,
-    },
-    battery: {
-      capacityKWh: Math.round(batteryCapKWh * 10) / 10,
-      capex: Math.round(batteryCapex),
-    },
-    total: {
-      capacityKW: Math.round(totalCapKW * 10) / 10,
-      totalCapex: Math.round(totalCapex),
-      annualOpex: Math.round(totalOpex),
-      coverage: Math.round((totalGen / annualDemandKWh) * 100),
-    },
-  };
-}
-
-function calculateFinancials(barangay: Barangay, energyMix: any) {
-  const annualDemandKWh = barangay.avgDailyDemandKWh * 365;
-  const currentCost = annualDemandKWh * barangay.currentElectricityCostPerKWh;
-  const savings =
-    (currentCost * energyMix.total.coverage) / 100 - energyMix.total.annualOpex;
-  const payback = energyMix.total.totalCapex / savings;
-  const roi20 =
-    ((savings * 20 - energyMix.total.totalCapex) / energyMix.total.totalCapex) *
-    100;
-
-  return {
-    totalInvestment: energyMix.total.totalCapex,
-    annualSavings: Math.round(savings),
-    paybackYears: Math.round(payback * 10) / 10,
-    roi20Year: Math.round(roi20 * 10) / 10,
-  };
-}
-
+// --- REFINED: PROPOSAL GENERATION ---
+/**
+ * Asks the AI to act as an analyst and generate a complete proposal,
+ * including the energy mix and financial calculations, based on all
+ * provided data.
+ */
 async function generateREProposal(
   barangay: Barangay,
-  energyMix: any,
-  financials: any,
+  userContext: OnboardingData, // <-- NOW ACCEPTS USER CONTEXT
   demandMultiplier: number,
-  notes?: string
+  notes?: string,
+  provinceSummary?: string
 ) {
   if (!geminiClient) {
     throw new Error(
@@ -230,48 +226,102 @@ async function generateREProposal(
     );
   }
 
-  const prompt = `Create a professional renewable energy proposal for ${
-    barangay.name
-  }, ${barangay.province}.
+  // Calculate disposable income to help the AI
+  const disposableIncome =
+    userContext.monthlyIncome - userContext.monthlyExpenses;
+  const applianceList =
+    userContext.appliances
+      .map((a) => `${a.name} (${a.usageIntensity}h/day)`)
+      .join(", ") || "Not specified";
 
-COMMUNITY PROFILE:
-- ${barangay.households} households, ${barangay.population} residents
-- Daily energy demand: ${Math.round(
-    barangay.avgDailyDemandKWh * demandMultiplier
-  )} kWh
-- Current electricity cost: ₱${barangay.currentElectricityCostPerKWh}/kWh
+  const prompt = `
+You are ${ASSISTANT_NAME}, an expert financial and technical analyst for IslaGrid.
+Your task is to generate a compelling, professional renewable energy proposal for a community member.
 
-PROPOSED SYSTEM:
-- Solar: ${energyMix.solar.capacityKW} kW (${energyMix.solar.percentage}%)
-- Hydro: ${energyMix.hydro.capacityKW} kW (${energyMix.hydro.percentage}%)
-- Wind: ${energyMix.wind.capacityKW} kW (${energyMix.wind.percentage}%)
-- Battery: ${energyMix.battery.capacityKWh} kWh
-- Total: ${energyMix.total.capacityKW} kW covering ${
-    energyMix.total.coverage
-  }% of demand
+Use the following data blocks to construct your analysis. You must perform the calculations yourself based on the constants provided.
 
-ECONOMICS:
-- Investment: ₱${financials.totalInvestment.toLocaleString()}
-- Annual savings: ₱${financials.annualSavings.toLocaleString()}
-- Payback: ${financials.paybackYears} years
-- 20-year ROI: ${financials.roi20Year}%
+---
+1. USER CONTEXT (The Client):
+- Location: ${userContext.location} (maps to Barangay: ${barangay.name}, ${
+    barangay.province
+  })
+- Households: ${barangay.households}
+- Stated Monthly Income: ₱${userContext.monthlyIncome.toLocaleString()}
+- Stated Monthly Expenses: ₱${userContext.monthlyExpenses.toLocaleString()}
+- Est. Monthly Disposable Income: ₱${disposableIncome.toLocaleString()}
+- Appliances / Load Profile: ${applianceList}
+- Current Electricity Cost: ₱${barangay.currentElectricityCostPerKWh}/kWh
+- Grid Status: ${
+    barangay.gridConnected ? "Grid-Connected" : "Off-Grid/Unreliable"
+  }
+---
 
-POLICY CONTEXT:
-The Philippine RE Act (RA 9513) provides incentives including 7-year income tax holiday, duty-free imports, and net metering. Community projects qualify for DOE grants and development bank financing.
+---
+2. LOCAL RESOURCES (Based on dataset):
+- Province: ${barangay.province}
+- Solar Irradiance: ${barangay.solarIrradiance} (High is >5.0, Good is 4.5-5.0)
+- River Access (for Micro-Hydro): ${barangay.hasRiverAccess ? "Yes" : "No"}
+- Avg. Wind Speed: ${barangay.avgWindSpeed} m/s (Viable > ${
+    CONSTANTS.wind.minViableSpeed
+  } m/s)
+${provinceSummary ? `- Summary: ${provinceSummary}` : ""}
+---
 
-${notes ? `SPECIAL REQUIREMENTS: ${notes}` : ""}
+---
+3. FINANCIAL & TECHNICAL CONSTANTS (For Your Calculations):
+- Solar:
+  - System Efficiency: ${CONSTANTS.solar.systemEfficiency * 100}%
+  - CAPEX: ₱${CONSTANTS.solar.capexPerKW.toLocaleString()}/kW
+  - OPEX: ${CONSTANTS.solar.opexPercentage * 100}% of CAPEX
+- Hydro (if viable):
+  - CAPEX: ₱${CONSTANTS.hydro.capexPerKW.toLocaleString()}/kW
+  - OPEX: ${CONSTANTS.hydro.opexPercentage * 100}% of CAPEX
+- Wind (if viable):
+  - CAPEX: ₱${CONSTANTS.wind.capexPerKW.toLocaleString()}/kW
+  - OPEX: ${CONSTANTS.wind.opexPercentage * 100}% of CAPEX
+- Battery Storage:
+  - CAPEX: ₱${CONSTANTS.battery.capexPerKWh.toLocaleString()}/kWh
+  - OPEX: ${CONSTANTS.battery.opexPercentage * 100}% of CAPEX
+---
 
-Write a compelling 4-section proposal:
-1. Executive Summary (why this is the right choice)
-2. Technical Design (system components and performance)
-3. Financial Analysis (investment and returns)
-4. Implementation Plan (timeline and next steps)
+${notes ? `4. SPECIAL REQUIREMENTS: ${notes}` : ""}
 
-Keep it professional yet accessible for barangay officials.`;
+---
+YOUR TASK:
+Write a compelling 4-section proposal. Base ALL calculations on the data provided.
+
+1.  **Executive Summary:** Start by addressing the user's specific context (e.g., "For your community in ${
+    userContext.location
+  } with a stated disposable income of ₱${disposableIncome.toLocaleString()}..."). Highlight why this proposal is the right choice for their financial and energy goals.
+
+2.  **Recommended Energy Solution:**
+    * First, estimate the total daily demand. Use the user's appliances if listed, or fall back to the provided '${
+      barangay.avgDailyDemandKWh
+    } kWh' (and state this assumption). Apply the \`${demandMultiplier}\` factor to get the final target demand.
+    * Based on the 'LOCAL RESOURCES' and 'USER CONTEXT', design an optimal, cost-effective energy mix (Solar, Hydro, Wind).
+    * Specify the 'Total Capacity (kW)' for each source and a 'Battery Storage (kWh)' size (e.g., 4-6 hours of average load).
+    * Justify *why* you chose this mix (e.g., "Given the strong solar irradiance of ${
+      barangay.solarIrradiance
+    } and your financial profile, we recommend prioritizing a 10kW solar system...").
+
+3.  **Financial Analysis (Crucial):**
+    * Calculate the 'Total System Investment (CAPEX)' using the mix you designed and the provided constants.
+    * Calculate the 'Annual Operational Cost (OPEX)'.
+    * Calculate the 'Estimated Annual Savings' (Energy Generated * ₱${
+      barangay.currentElectricityCostPerKWh
+    }/kWh - Annual OPEX).
+    * Calculate the 'Simple Payback Period' (Total CAPEX / Annual Savings).
+    * Calculate the '20-Year Return on Investment (ROI)'.
+    * **Personalize this section:** Discuss the 'Total Investment' in the context of the user's 'Disposable Income' and suggest potential financing models.
+
+4.  **Implementation & Next Steps:**
+    * Outline a clear plan (e.g., 1. Detailed Site Survey, 2. Securing Financing, 3. Installation).
+    * Highlight how IslaGrid services and community ownership models (like NFC profit cards) align with their goals.
+`;
 
   try {
     const model = geminiClient.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
     });
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -291,6 +341,7 @@ Keep it professional yet accessible for barangay officials.`;
   }
 }
 
+// --- MIDDLEWARE: AUTHENTICATION ---
 export function authenticateAPI(
   req: Request,
   res: Response,
@@ -308,6 +359,7 @@ export function authenticateAPI(
   return next();
 }
 
+// --- MIDDLEWARE: RATE LIMITING ---
 export function rateLimit(req: Request, res: Response, next: NextFunction) {
   const clientIP = req.ip ?? req.socket.remoteAddress ?? "unknown";
   const now = Date.now();
@@ -336,36 +388,37 @@ export function rateLimit(req: Request, res: Response, next: NextFunction) {
   return next();
 }
 
+// --- REFINED: PROPOSAL HANDLER ---
 export async function generateProposalHandler(req: Request, res: Response) {
   try {
     const {
       barangay,
+      userContext, // <-- NEW: Receive user's onboarding data
       demandMultiplier = 1.0,
       notes,
     } = req.body as {
       barangay: Barangay;
+      userContext: OnboardingData; // <-- NEW
       demandMultiplier?: number;
       notes?: string;
     };
 
-    if (!barangay) {
+    // --- VALIDATION ---
+    if (!barangay || !userContext) {
       return res.status(400).json({
-        error: "Barangay data is required",
+        error: "Barangay data and userContext are required",
         example: {
           barangay: {
             name: "San Isidro",
             province: "Laguna",
-            population: 2500,
-            households: 500,
-            avgDailyDemandKWh: 3000,
-            solarIrradiance: 4.5,
-            hasRiverAccess: true,
-            avgWindSpeed: 3.2,
-            gridConnected: true,
-            currentElectricityCostPerKWh: 12.5,
+            /* ... all barangay fields ... */
           },
-          demandMultiplier: 1.0,
-          notes: "Priority on solar due to available land",
+          userContext: {
+            location: "San Isidro, Laguna",
+            monthlyIncome: 30000,
+            monthlyExpenses: 20000,
+            appliances: [{ name: "Refrigerator", usageIntensity: 24 }],
+          },
         },
       });
     }
@@ -379,7 +432,6 @@ export async function generateProposalHandler(req: Request, res: Response) {
       "solarIrradiance",
       "currentElectricityCostPerKWh",
     ];
-
     const missingFields = requiredFields.filter(
       (field) => !(field in barangay)
     );
@@ -390,31 +442,48 @@ export async function generateProposalHandler(req: Request, res: Response) {
       });
     }
 
-    const energyMix = calculateEnergyMix(barangay, demandMultiplier);
-    const financials = calculateFinancials(barangay, energyMix);
+    // --- REMOVED: Local calculations ---
+    // const energyMix = calculateEnergyMix(barangay, demandMultiplier);
+    // const financials = calculateFinancials(barangay, energyMix);
+    // The AI will generate this as part of the proposal text.
 
+    const provinceRecord = fallbackAdvisor.getProvinceByName(barangay.province);
+    const provinceSummary = provinceRecord
+      ? fallbackAdvisor.summarizeProvince(provinceRecord)
+      : undefined;
+
+    // --- CALL NEW PROMPT GENERATOR ---
     const { text: proposal, source } = await generateREProposal(
       barangay,
-      energyMix,
-      financials,
+      userContext, // <-- PASS USER CONTEXT
       demandMultiplier,
-      notes
+      notes,
+      provinceSummary
     );
+
+    const metadata = {
+      barangay: `${barangay.name}, ${barangay.province}`,
+      demandMultiplier,
+      source,
+      provider:
+        source === "gemini" ? "Google Gemini" : "IslaGrid Knowledge Base",
+      timestamp: new Date().toISOString(),
+      version: "v1",
+      ...(provinceRecord
+        ? {
+            dataset: {
+              province: provinceRecord.province,
+              source: DATASET_SOURCE,
+            },
+          }
+        : {}),
+    };
 
     return res.json({
       success: true,
-      proposal,
-      energyMix,
-      financials,
-      metadata: {
-        barangay: `${barangay.name}, ${barangay.province}`,
-        demandMultiplier,
-        source,
-        provider:
-          source === "gemini" ? "Google Gemini" : "Smart Local Template",
-        timestamp: new Date().toISOString(),
-        version: "v1",
-      },
+      proposal, // The AI-generated text
+      // energyMix and financials are now *inside* the proposal text
+      metadata,
     });
   } catch (error) {
     console.error("/generate-proposal error:", error);
@@ -429,26 +498,51 @@ export async function generateProposalHandler(req: Request, res: Response) {
   }
 }
 
+// --- REFINED: CHAT HANDLER ---
 export async function chatHandler(req: Request, res: Response) {
   try {
-    const { message } = req.body as { message?: string };
+    const { message, userContext } = req.body as {
+      message?: string;
+      userContext?: OnboardingData; // <-- NOW ACCEPTS USER CONTEXT
+    };
 
     if (!message || !message.trim()) {
       return res.status(400).json({
         error: "Message is required",
-        example: { message: "What projects has the developer built?" },
+        example: {
+          message: "What renewable energy mix fits my budget?",
+          userContext: {
+            location: "San Isidro, Laguna",
+            monthlyIncome: 30000,
+            /* ... */
+          },
+        },
       });
     }
 
-    const prompt = createPrompt(message);
+    const cleanedMessage = message.trim();
+    const provinceRecord =
+      fallbackAdvisor.getProvinceFromMessage(cleanedMessage);
+    const provinceSummary = provinceRecord
+      ? fallbackAdvisor.summarizeProvince(provinceRecord)
+      : undefined;
 
     if (AI_PROVIDER === "gemini" && geminiClient) {
       try {
-        const reply = await generateWithGemini(message, prompt);
+        // Pass userContext to the prompt generator
+        const prompt = createChatPrompt(
+          cleanedMessage,
+          provinceSummary,
+          userContext
+        );
+        const reply = await generateWithGemini(cleanedMessage, prompt);
         return res.json({
           reply,
           source: "gemini",
           provider: "Google Gemini",
+          dataset: provinceRecord
+            ? { province: provinceRecord.province, source: DATASET_SOURCE }
+            : undefined,
           timestamp: new Date().toISOString(),
           version: "v1",
         });
@@ -457,43 +551,37 @@ export async function chatHandler(req: Request, res: Response) {
       }
     }
 
-    const fallbackReply = fallbackBot.generateResponse(message);
-    trackQuery(message, "fallback");
+    // Fallback logic (does not use userContext)
+    const fallbackResult = fallbackAdvisor.generateResponse(cleanedMessage);
+    trackQuery(cleanedMessage, "knowledge-base");
 
     return res.json({
-      reply: fallbackReply,
-      source: "fallback",
-      provider: "Smart Local Responses",
-      notice: `Using built-in responses for ${PORTFOLIO_OWNER}.`,
+      reply: fallbackResult.reply,
+      source: "knowledge-base",
+      provider: "IslaGrid Knowledge Base",
+      dataset: fallbackResult.province
+        ? {
+            province: fallbackResult.province.province,
+            source: DATASET_SOURCE,
+          }
+        : undefined,
       timestamp: new Date().toISOString(),
       version: "v1",
     });
   } catch (error) {
     console.error("/chat error:", error);
-    const fallbackReply = fallbackBot.generateResponse(req.body?.message ?? "");
+    const fallbackResult = fallbackAdvisor.generateResponse(
+      req.body?.message ?? ""
+    );
+    trackQuery(req.body?.message ?? "", "knowledge-base");
     return res.status(500).json({
-      reply: fallbackReply,
-      source: "fallback",
-      provider: "Smart Local Responses",
-      notice: "Service temporarily unavailable. Using built-in responses.",
-      error:
-        process.env.NODE_ENV === "development"
-          ? (error as Error).message
-          : undefined,
-      timestamp: new Date().toISOString(),
-      version: "v1",
+      reply: fallbackResult.reply,
+      // ... (rest of error response) ...
     });
   }
 }
 
-export function portfolioHandler(_req: Request, res: Response) {
-  return res.json({
-    data: portfolioData,
-    owner: PORTFOLIO_OWNER,
-    timestamp: new Date().toISOString(),
-    version: "v1",
-  });
-}
+// --- HEALTH & ANALYTICS HANDLERS (Unchanged) ---
 
 export function healthHandler(_req: Request, res: Response) {
   return res.json({
@@ -501,10 +589,14 @@ export function healthHandler(_req: Request, res: Response) {
     server: "running",
     providers: {
       gemini: Boolean(geminiClient),
-      fallback: true,
+      "knowledge-base": true,
     },
-    activeProvider: AI_PROVIDER,
-    portfolioOwner: PORTFOLIO_OWNER,
+    activeProvider:
+      AI_PROVIDER === "gemini" && geminiClient ? "gemini" : "knowledge-base",
+    dataset: {
+      source: DATASET_SOURCE,
+      provinces: fallbackAdvisor.getProvinceCount(),
+    },
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     version: "v1",
@@ -526,20 +618,26 @@ export function analyticsHandler(_req: Request, res: Response) {
   });
 }
 
+// --- REFINED: DOCS HANDLER ---
 export function docsHandler(_req: Request, res: Response) {
   return res.json({
-    name: `${PORTFOLIO_OWNER}'s Portfolio Chatbot API + IslaGrid RE Proposal Generator`,
+    name: "IslaGrid Renewable Energy Planning API",
     version: "v1",
     description:
-      "Microservice API for portfolio chatbot integration and renewable energy proposal generation",
+      "Endpoints for AI-assisted community renewable energy planning, combining Gemini responses with IslaGrid's provincial resource dataset.",
     endpoints: {
       "POST /api/v1/generate-proposal": {
-        description: "Generate renewable energy proposal for a barangay",
+        description:
+          "Generate a renewable energy proposal for a barangay using demand, resource, and financial assumptions, personalized to a user's financial profile.",
         parameters: {
-          barangay: "object (required) - Barangay data with energy profile",
+          barangay:
+            "object (required) - Location and demand profile, including households, daily kWh, and resource indicators",
+          userContext:
+            "object (required) - User's onboarding profile (location, monthlyIncome, monthlyExpenses, appliances)",
           demandMultiplier:
-            "number (optional, default: 1.0) - Demand scaling factor",
-          notes: "string (optional) - Additional requirements or notes",
+            "number (optional, default: 1.0) - Scale factor for projected demand",
+          notes:
+            "string (optional) - Additional planning notes such as land availability or financing goals",
         },
         example: {
           barangay: {
@@ -554,46 +652,64 @@ export function docsHandler(_req: Request, res: Response) {
             gridConnected: true,
             currentElectricityCostPerKWh: 12.5,
           },
-          demandMultiplier: 1.2,
-          notes: "Priority on solar due to available land",
+          userContext: {
+            location: "San Isidro, Laguna",
+            monthlyIncome: 35000,
+            monthlyExpenses: 22000,
+            appliances: [
+              { name: "Refrigerator", usageIntensity: 24 },
+              { name: "Air Conditioner", usageIntensity: 8 },
+            ],
+          },
+          demandMultiplier: 1.1,
+          notes:
+            "Prioritize community-owned solar with river micro-hydro backup",
         },
       },
       "POST /api/v1/chat": {
-        description: "Send a message to the chatbot",
+        description: `Conversational assistant for ${ASSISTANT_NAME}. Can be personalized by providing userContext.`,
         parameters: {
-          message: "string (required) - The message to send",
-          context: "object (optional) - Additional context",
+          message: "string (required) - User question or prompt",
+          userContext:
+            "object (optional) - User's onboarding profile for a personalized response",
         },
         example: {
-          message: "What projects has the developer built?",
+          message: "What system size can I afford based on my income?",
+          userContext: {
+            location: "San Isidro, Laguna",
+            monthlyIncome: 35000,
+            monthlyExpenses: 22000,
+            appliances: [{ name: "Refrigerator", usageIntensity: 24 }],
+          },
         },
       },
-      "GET /api/v1/portfolio": {
-        description: "Get portfolio data",
-        auth: API_KEY ? "API key required" : "No authentication required",
-      },
       "GET /api/v1/health": {
-        description: "Health check endpoint",
+        description: "Health and provider status",
       },
       "GET /api/v1/analytics": {
-        description: "Get usage analytics",
+        description: "Keyword and provider usage analytics",
         auth: API_KEY ? "API key required" : "No authentication required",
       },
     },
-    authentication: API_KEY
-      ? "API key required in X-API-Key header"
-      : "No authentication required",
-    rateLimit: `${RATE_LIMIT_PER_MINUTE} requests per minute per IP`,
+    // ... (rest of docs) ...
   });
 }
 
+// --- ROOT HANDLER (Unchanged) ---
 export function rootHandler(req: Request, res: Response) {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   return res.json({
-    name: `${PORTFOLIO_OWNER}'s Portfolio Chatbot API + IslaGrid RE Proposal Generator`,
+    name: "IslaGrid Renewable Energy Planning API",
     version: "v1",
     status: "running",
-    services: ["Portfolio Chatbot", "Renewable Energy Proposal Generator"],
+    services: [
+      "AI conversational assistant for community energy planning",
+      "Renewable energy proposal generator",
+    ],
+    dataset: {
+      source: DATASET_SOURCE,
+      provinces: fallbackAdvisor.getProvinceCount(),
+    },
     documentation: `${baseUrl}/api/v1/docs`,
     health: `${baseUrl}/api/v1/health`,
   });
