@@ -6,7 +6,6 @@ import {
   docsHandler,
   generateProposalHandler,
   healthHandler,
-  portfolioHandler,
   rateLimit,
   rootHandler,
 } from "../controllers/aiController.js";
@@ -20,7 +19,6 @@ router.post(
   generateProposalHandler
 );
 router.post("/chat", rateLimit, authenticateAPI, chatHandler);
-router.get("/portfolio", authenticateAPI, portfolioHandler);
 router.get("/health", healthHandler);
 router.get("/analytics", authenticateAPI, analyticsHandler);
 router.get("/docs", docsHandler);
