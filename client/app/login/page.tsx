@@ -1,5 +1,6 @@
 "use client";
 
+import { FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
@@ -8,6 +9,22 @@ const LOGIN_IMAGE =
   "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80";
 
 const LoginPage = () => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      email: formData.get("email")?.toString().trim() ?? "",
+      password: formData.get("password")?.toString() ?? "",
+    };
+    // TODO: hand off to authentication service
+    console.log("login payload", payload);
+  };
+
+  const handleGoogleSignIn = () => {
+    // TODO: trigger Google OAuth flow
+    console.log("login with Google");
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-white via-[#FFF5EB] to-white px-4 py-10 text-gray-900">
       <div className="grid w-full max-w-5xl gap-10 rounded-3xl border border-[#F2D8C3] bg-white p-6 shadow-xl md:grid-cols-2 md:p-10">
@@ -53,7 +70,7 @@ const LoginPage = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -98,6 +115,7 @@ const LoginPage = () => {
             <div className="flex items-center justify-center">
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#F2D8C3] bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-[#FC7019] hover:text-[#FC7019]"
               >
                 <FcGoogle className="h-5 w-5" aria-hidden="true" />
