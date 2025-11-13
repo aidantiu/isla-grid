@@ -92,10 +92,17 @@ const ChatMessageList = ({
 
                     <div className="text-sm leading-relaxed md:text-base">
                       {message.content.split("\n").map((line, index) => {
-                        const segments = line.split(/(\*\*[^*]+\*\*)/g);
+                        // Simple markdown-like handling for headings and bold text
+                        const isHeading = line.startsWith("## ");
+                        const text = isHeading ? line.replace(/^##\s+/, "") : line;
+                        const segments = text.split(/(\*\*[^*]+\*\*)/g);
+
+                        const headingClasses = isHeading
+                          ? "mb-3 text-base md:text-lg font-semibold tracking-tight"
+                          : "mb-2 last:mb-0";
 
                         return (
-                          <p key={index} className="mb-2 last:mb-0">
+                          <p key={index} className={headingClasses}>
                             {segments.map((segment, i) => {
                               const match = segment.match(/^\*\*(.*)\*\*$/);
                               if (match) {
