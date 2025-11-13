@@ -1,5 +1,6 @@
-'use client';
+"use client";
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 const PageNavbar = () => {
@@ -31,13 +32,21 @@ const PageNavbar = () => {
     >
       <div className="container mx-auto px-6 py-4">
         <div className="flex flex-nowrap justify-between items-center ">
-          <a
-            href="#"
-            className={`text-3xl font-extrabold whitespace-nowrap transition-colors duration-300 ${
-              hasScrolled ? 'text-[#131B28]' : 'text-white'
-            }`}
-          >
-            <span className="text-[#FC7019]">Isla</span>Grid
+          <a href="#" className="flex items-center gap-3 w-auto">
+            <Image
+              src={hasScrolled ? '/Light-SPLogo.svg' : '/Dark-SPLogo.svg'}
+              width={50}
+              height={50}
+              alt="IslaGrid logo"
+              priority
+            />
+            <span
+              className={`text-3xl font-extrabold whitespace-nowrap transition-colors duration-300 ${
+                hasScrolled ? 'text-[#131B28]' : 'text-white'
+              }`}
+            >
+              <span className="text-[#FC7019]">Isla</span>Grid
+            </span>
           </a>
           
           {/* Desktop Menu */}
