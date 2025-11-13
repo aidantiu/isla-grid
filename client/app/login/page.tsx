@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
 
 const LOGIN_IMAGE =
   "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80";
@@ -99,29 +100,7 @@ const LoginPage = () => {
                 type="button"
                 className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#F2D8C3] bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-[#FC7019] hover:text-[#FC7019]"
               >
-                <svg
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  aria-hidden
-                  focusable="false"
-                >
-                  <path
-                    fill="#EA4335"
-                    d="M12 10.8v3.6h5.05c-.22 1.2-.9 2.22-1.92 2.9l3.1 2.4c1.82-1.68 2.87-4.14 2.87-7.06 0-.68-.06-1.33-.17-1.94H12z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M6.54 14.32l-.85.64-2.48 1.93C4.83 19.61 8.17 21.6 12 21.6c2.7 0 4.96-.9 6.62-2.46l-3.1-2.4c-.86.58-1.97.93-3.52.93-2.71 0-5.01-1.78-5.82-4.25z"
-                  />
-                  <path
-                    fill="#4A90E2"
-                    d="M3.21 7.71C2.44 9.26 2 10.98 2 12.8c0 1.82.44 3.54 1.21 5.09.81-2.47 3.11-4.25 5.82-4.25.85 0 1.64.15 2.34.43V9.6H7.38c-.96 0-1.79.34-2.44 1z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M12 4.8c1.47 0 2.8.51 3.84 1.52l2.88-2.88C16.96 1.98 14.7 1 12 1 8.17 1 4.83 3 3.21 6.09l3.17 2.46C7.99 6.58 9.29 4.8 12 4.8z"
-                  />
-                </svg>
+                <FcGoogle className="h-5 w-5" aria-hidden="true" />
                 Sign in with Google
               </button>
             </div>
