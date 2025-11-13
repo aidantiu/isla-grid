@@ -318,47 +318,6 @@ const FeaturesSection = () => {
       <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
         <div className="lg:w-1/2 lg:pr-10">
           <span className="inline-flex items-center px-4 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
-            Step 3: Consult & Optimize
-          </span>
-          <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
-            Personal Energy Consultant Chatbot
-          </h3>
-          <p className="mt-4 text-lg text-gray-700">
-            Chat with our AI energy consultant to get personalized answers based on your community&apos;s unique profile and proposal. Ask questions, get optimization tips, and receive expert guidance on maximizing energy generation and ROI.
-          </p>
-          
-          <div className="mt-6 space-y-3">
-            <p className="font-semibold text-[#131B28]">Common Questions Answered:</p>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;Which renewable source is best for our barangay?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;How can we maximize energy output?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;What&apos;s the expected payback period?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;How do we maintain the system efficiently?&quot;</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#FC7019]">💬</span>
-                <span>&quot;What government incentives are available?&quot;</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* STEP 3: Consult & Optimize */}
-      <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-        <div className="lg:w-1/2 lg:pr-10">
-          <span className="inline-flex items-center px-4 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
             {t.step3Badge}
           </span>
           <h3 className="mt-4 text-3xl font-extrabold text-[#131B28]">
@@ -449,36 +408,6 @@ const FeaturesSection = () => {
                     🎯 {t.commonQuestion4}
                   </button>
                 </div>
-              </div>
-
-              {/* Suggested Questions */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-xs font-semibold text-gray-600 mb-3">Suggested Questions:</p>
-                <div className="space-y-2">
-                  <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    💡 How to maximize energy output?
-                  </button>
-                  <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    💰 What&apos;s the payback period?
-                  </button>
-                  <button className="w-full text-left text-sm bg-white border border-gray-300 rounded-lg p-2 hover:bg-gray-50 transition-colors text-gray-700">
-                    🎯 Maintenance requirements?
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Input Field */}
-            <div className="mt-4 border-t border-gray-200 pt-4">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Ask your question..."
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FC7019]"
-                />
-                <button className="bg-[#FC7019] hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                  Send
-                </button>
               </div>
             </div>
 
