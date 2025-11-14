@@ -293,9 +293,6 @@ const AiPage = () => {
 
 **USER CONTEXT:**
   // Initialize Gemini context with user data
-  const initializeGeminiContext = (context: OnboardingData) => {
-    const systemPrompt = `You are IslaBot, a specialized renewable energy consultant for the IslaGrid platform. You have the following user profile:
-
 **User Context:**
 - **Location:** ${context.location}
 - **Monthly Income:** ₱${context.monthlyIncome.toLocaleString()}
