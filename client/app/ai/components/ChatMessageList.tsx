@@ -304,9 +304,9 @@ const ChatMessageList = ({
             <div className="flex items-center gap-3 rounded-3xl border border-[#F2D8C3] bg-white px-4 py-3 text-sm text-gray-700 shadow-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>
-                {webSearchEnabled
+                {/* {webSearchEnabled
                   ? "Searching the web for the latest results..."
-                  : "Thinking through the best answer for you..."}
+                  : "Thinking through the best answer for you..."} */}
               </span>
             </div>
           </div>
