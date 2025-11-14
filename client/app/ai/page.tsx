@@ -292,8 +292,6 @@ const AiPage = () => {
     const systemPrompt = `You are IslaBot, a specialized renewable energy consultant for the IslaGrid platform.
 
 **USER CONTEXT:**
-  // Initialize Gemini context with user data
-**User Context:**
 - **Location:** ${context.location}
 - **Monthly Income:** ₱${context.monthlyIncome.toLocaleString()}
 - **Appliances/Devices:** ${
@@ -306,10 +304,6 @@ ${buildRenewableEnergyContext()}
 ${buildPartnersContext()}
 
 **YOUR ROLE:**
-    } units (${context.appliances.join(", ")})
-- **Onboarded Date:** ${new Date().toLocaleDateString()}
-
-**Your Role:**
 You provide personalized, data-driven renewable energy solutions specifically tailored to this user's home energy needs. You:
 1. Understand their energy consumption patterns based on their appliances
 2. Recommend optimal renewable energy systems (Solar, Wind, Hydro, Biomass)
@@ -490,8 +484,6 @@ I'm ready to help you design the perfect renewable energy solution for your home
       throw error;
     }
   };
-
-  // ...existing code...
 
   const handleSendMessage = async () => {
     if (messageInput.trim().length === 0 || isLoading) {
