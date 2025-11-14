@@ -21,49 +21,59 @@ import aiRouter from "./routes/aiRouter.js";
 const app = express();
 const port = process.env.PORT ? Number(process.env.PORT) : 8000;
 
+// Allow multiple origins for different environments
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://isla-gridclient.vercel.app",
+  process.env.CLIENT_URL, // Add this to your .env if you have custom domains
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "https://isla-gridclient.vercel.app",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-API-Key"],
   })
 );
 
-// Handle preflight requests immediately
-app.options("*", cors());
-
-
+app.use(authenticate);
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-
-app.use(authenticate);
-
 // JSON parsing error handler
-// app.use(
-//   (
-//     err: SyntaxError & { status?: number; body?: string },
-//     _req: Request,
-//     res: Response,
-//     next: NextFunction
-//   ) => {
-//     if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-//       return res.status(400).json({
-//         error: "Invalid JSON format",
-//         message:
-//           "Please check your JSON syntax. Common issues include missing quotes around property names, trailing commas, or malformed structure.",
-//         example: {
-//           correct: { message: "What is your experience?" },
-//           received: err.body ? err.body.slice(0, 100) : "Invalid JSON",
-//         },
-//         timestamp: new Date().toISOString(),
-//       });
-//     }
-//     return next(err);
-//   }
-// );
+app.use(
+  (
+    err: SyntaxError & { status?: number; body?: string },
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+      return res.status(400).json({
+        error: "Invalid JSON format",
+        message:
+          "Please check your JSON syntax. Common issues include missing quotes around property names, trailing commas, or malformed structure.",
+        example: {
+          correct: { message: "What is your experience?" },
+          received: err.body ? err.body.slice(0, 100) : "Invalid JSON",
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+    return next(err);
+  }
+);
 
 app.use("/api/chats", chatRouter);
 
