@@ -1,9 +1,12 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Bot, Copy, Globe, Loader2, User } from "lucide-react";
 import { type ChatMessage } from "./types";
+import TopRenewablesPieChart from "./TopRenewablesPieChart";
+import { provinces } from "@/lib/philippineProvinces";
 import { Message } from "@/types/chatTypes";
+import { getRenewableMixByProvince } from "@/lib/apiEndpoints/renewableDataEndpoints";
 
 interface ChatMessageListProps {
   messages: Message[];
@@ -21,6 +24,59 @@ const ChatMessageList = ({
   webSearchEnabled,
 }: ChatMessageListProps) => {
   const endRef = useRef<HTMLDivElement>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [mixByProvince, setMixByProvince] = useState<
+    Record<
+      string,
+      { biomass: number; solar: number; hydropower: number; wind: number }
+    >
+  >({});
+
+  // Load province-level mix from the server once a province is selected
+  useEffect(() => {
+    if (!selectedLocation) return;
+
+    const controller = new AbortController();
+
+    const fetchMix = async () => {
+      try {
+        const data = await getRenewableMixByProvince(selectedLocation);
+
+        setMixByProvince((prev) => ({
+          ...prev,
+          [data.province]: {
+            biomass: data.biomass,
+            solar: data.solar,
+            hydropower: data.hydropower,
+            wind: data.wind,
+          },
+        }));
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return;
+        console.error("Error fetching renewable mix", error);
+      }
+    };
+
+    void fetchMix();
+
+    return () => {
+      controller.abort();
+    };
+  }, [selectedLocation]);
+
+  const chartData = useMemo(() => {
+    if (!selectedLocation) return undefined;
+
+    const mix = mixByProvince[selectedLocation];
+    if (!mix) return undefined;
+
+    return [
+      { name: "Biomass", value: mix.biomass },
+      { name: "Solar", value: mix.solar },
+      { name: "Hydropower", value: mix.hydropower },
+      { name: "Wind", value: mix.wind },
+    ];
+  }, [mixByProvince, selectedLocation]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,6 +85,51 @@ const ChatMessageList = ({
   return (
     <div className="flex-1 overflow-y-auto px-3 py-6 md:px-10">
       <div className="mx-auto flex max-w-3xl flex-col gap-6">
+        {/* Location selector + proposal context chart (top renewables) */}
+        <div className="rounded-3xl border border-[#F2D8C3] bg-white/90 p-4 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#FC7019]">
+                Renewable Insights
+              </p>
+              <p className="text-sm text-gray-700">
+                Pick a location to visualize its top renewable energy mix that
+                IslaBot can use in your proposal.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2 md:flex-row md:items-center">
+              <label
+                className="text-xs font-medium text-gray-600"
+                htmlFor="location-select"
+              >
+                View mix for
+              </label>
+              <select
+                id="location-select"
+                value={selectedLocation}
+                onChange={(event) => setSelectedLocation(event.target.value)}
+                className="w-full md:w-56 rounded-2xl border border-[#F2D8C3] bg-white px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-[#FC7019] focus:outline-none focus:ring-1 focus:ring-[#FC7019]/40"
+              >
+                <option value="">Select a province or region</option>
+                {provinces.map((province) => (
+                  <option key={province} value={province}>
+                    {province}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Only show chart when a location is selected */}
+          {selectedLocation && chartData && (
+            <div className="mt-4">
+              {/* key forces full remount when province changes so Recharts refreshes */}
+              <TopRenewablesPieChart key={selectedLocation} data={chartData} />
+            </div>
+          )}
+        </div>
+
         {messages.length === 0 && !isLoading ? (
           <div className="rounded-3xl border border-[#F2D8C3] bg-white p-6 text-center text-gray-900 shadow-sm">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FC7019]/15 text-[#FC7019]">
