@@ -22,39 +22,47 @@ const port = process.env.PORT ? Number(process.env.PORT) : 8000;
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https://isla-gridclient.vercel.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Handle preflight requests immediately
+app.options("*", cors());
 
-app.use(authenticate);
+
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+
+app.use(authenticate);
+
 // JSON parsing error handler
-app.use(
-  (
-    err: SyntaxError & { status?: number; body?: string },
-    _req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-      return res.status(400).json({
-        error: "Invalid JSON format",
-        message:
-          "Please check your JSON syntax. Common issues include missing quotes around property names, trailing commas, or malformed structure.",
-        example: {
-          correct: { message: "What is your experience?" },
-          received: err.body ? err.body.slice(0, 100) : "Invalid JSON",
-        },
-        timestamp: new Date().toISOString(),
-      });
-    }
-    return next(err);
-  }
-);
+// app.use(
+//   (
+//     err: SyntaxError & { status?: number; body?: string },
+//     _req: Request,
+//     res: Response,
+//     next: NextFunction
+//   ) => {
+//     if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+//       return res.status(400).json({
+//         error: "Invalid JSON format",
+//         message:
+//           "Please check your JSON syntax. Common issues include missing quotes around property names, trailing commas, or malformed structure.",
+//         example: {
+//           correct: { message: "What is your experience?" },
+//           received: err.body ? err.body.slice(0, 100) : "Invalid JSON",
+//         },
+//         timestamp: new Date().toISOString(),
+//       });
+//     }
+//     return next(err);
+//   }
+// );
 
 app.use("/api/chats", chatRouter);
 
