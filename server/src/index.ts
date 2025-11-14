@@ -22,7 +22,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 8000;
 
 app.use(
   cors({
-    origin: `${process.env.NEXT_PUBLIC_API_URL}`,
+    origin: `https://isla-gridclient.vercel.app`,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-API-Key"],
