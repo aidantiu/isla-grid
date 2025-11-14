@@ -21,30 +21,8 @@ import aiRouter from "./routes/aiRouter.js";
 const app = express();
 const port = process.env.PORT ? Number(process.env.PORT) : 8000;
 
-// Allow multiple origins for different environments
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://isla-gridclient.vercel.app",
-  process.env.CLIENT_URL, // Add this to your .env if you have custom domains
-].filter(Boolean);
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-API-Key"],
-  })
-);
+// Allow ALL origins - no restrictions
+app.use(cors());
 
 app.use(authenticate);
 
