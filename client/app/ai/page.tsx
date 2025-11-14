@@ -489,6 +489,7 @@ I'm ready to help you design the perfect renewable energy solution for your home
     if (messageInput.trim().length === 0 || isLoading) {
       return;
     }
+    console.log("messageInput", messageInput);
 
     const conversationId = currentConversationId;
 
