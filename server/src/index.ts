@@ -4,6 +4,7 @@ import cors from "cors";
 import authenticate from "./middlewares/authenticate.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { chatRouter } from "./routes/chatRoutes.js";
+import renewableDataRoutes from "./routes/renewableDataRoutes.js";
 
 // CORS config
 import path from "path";
@@ -64,6 +65,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/contexts", contextRouter);
 app.use("/api/v1", aiRouter);
+app.use("/api/renewables", renewableDataRoutes);
 
 app.use(errorHandler);
 
