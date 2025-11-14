@@ -22,7 +22,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 8000;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: `${process.env.NEXT_PUBLIC_API_URL}`,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-API-Key"],
